@@ -1,0 +1,148 @@
+{
+    "actorDatasetSchemaVersion": 1,
+    "title": "Czech Grants Dataset",
+    "description": "Dataset containing Czech government and EU grant opportunities with eligibility criteria, funding amounts, deadlines, and attached documents. Optionally enriched with LLM-extracted detailed criteria.",
+    "views": {
+        "overview": {
+            "title": "Grant Overview",
+            "description": "Key grant information at a glance",
+            "transformation": {
+                "fields": [
+                    "title",
+                    "sourceUrl",
+                    "callStatus",
+                    "submissionDeadline",
+                    "operationalProgramme"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "title": {
+                        "label": "Title",
+                        "format": "text"
+                    },
+                    "sourceUrl": {
+                        "label": "URL",
+                        "format": "link"
+                    },
+                    "callStatus": {
+                        "label": "Status",
+                        "format": "text"
+                    },
+                    "submissionDeadline": {
+                        "label": "Deadline",
+                        "format": "date"
+                    },
+                    "operationalProgramme": {
+                        "label": "Programme",
+                        "format": "text"
+                    }
+                }
+            }
+        },
+        "funding": {
+            "title": "Funding Details",
+            "description": "Grant funding amounts and allocations",
+            "transformation": {
+                "fields": [
+                    "title",
+                    "fundingAmounts.total",
+                    "fundingAmounts.min",
+                    "fundingAmounts.max",
+                    "fundingAmounts.currency"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "title": {
+                        "label": "Grant",
+                        "format": "text"
+                    },
+                    "fundingAmounts.total": {
+                        "label": "Total Allocation",
+                        "format": "number"
+                    },
+                    "fundingAmounts.min": {
+                        "label": "Min Amount",
+                        "format": "number"
+                    },
+                    "fundingAmounts.max": {
+                        "label": "Max Amount",
+                        "format": "number"
+                    },
+                    "fundingAmounts.currency": {
+                        "label": "Currency",
+                        "format": "text"
+                    }
+                }
+            }
+        },
+        "eligibility": {
+            "title": "Eligibility Criteria",
+            "description": "LLM-extracted eligibility requirements (requires enableLlm=true)",
+            "transformation": {
+                "fields": [
+                    "title",
+                    "enhancedInfo.eligibility_criteria",
+                    "enhancedInfo.territorial_restrictions",
+                    "enhancedInfo.thematic_keywords"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "title": {
+                        "label": "Grant",
+                        "format": "text"
+                    },
+                    "enhancedInfo.eligibility_criteria": {
+                        "label": "Criteria",
+                        "format": "array"
+                    },
+                    "enhancedInfo.territorial_restrictions": {
+                        "label": "Territory",
+                        "format": "text"
+                    },
+                    "enhancedInfo.thematic_keywords": {
+                        "label": "Keywords",
+                        "format": "array"
+                    }
+                }
+            }
+        },
+        "documents": {
+            "title": "Documents",
+            "description": "Attached documents and guidelines",
+            "transformation": {
+                "fields": [
+                    "title",
+                    "documents"
+                ],
+                "flatten": ["documents"]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "title": {
+                        "label": "Grant",
+                        "format": "text"
+                    },
+                    "documents.title": {
+                        "label": "Document",
+                        "format": "text"
+                    },
+                    "documents.url": {
+                        "label": "Download",
+                        "format": "link"
+                    },
+                    "documents.type": {
+                        "label": "Type",
+                        "format": "text"
+                    }
+                }
+            }
+        }
+    }
+}
