@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from typing import Optional, Dict
 import re
+import hashlib
 
 # Document download
 import requests
@@ -208,6 +209,22 @@ def convert_document_to_markdown(file_path: str) -> Optional[str]:
         return None
 
     return converter(str(file_path))
+
+
+def generate_content_hash(title: str, url: str, description: Optional[str] = None) -> str:
+    """
+    Generate SHA-256 hash for deduplication.
+
+    Args:
+        title: Grant title
+        url: Grant source URL
+        description: Optional full description
+
+    Returns:
+        Hex digest of the hash
+    """
+    content = f"{title}|{url}|{description or ''}"
+    return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
 
 # ===== Helper Functions =====

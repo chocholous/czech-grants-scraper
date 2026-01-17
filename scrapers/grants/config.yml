@@ -34,3 +34,40 @@ filters:
 logging:
   level: "${LOG_LEVEL:-INFO}"
   file: "./logs/scraper.log"
+
+# Ministry-specific configurations
+sources:
+  mzcr:
+    domain: "mzcr.cz"
+  justice:
+    domain: "justice.cz"
+  mzv:
+    domain: "mzv.cz"
+  vlada:
+    domain: "vlada.cz"
+  mfcr:
+    domain: "mfcr.cz"
+  eeagrants:
+    domain: "eeagrants.cz"
+  mkcr:
+    domain: "mkcr.cz"
+  army:
+    domain: "army.cz"
+  mpo:
+    domain: "mpo.cz"
+  msmt:
+    domain: "msmt.cz"
+  opjak:
+    domain: "opjak.cz"
+  tacr:
+    domain: "tacr.cz"
+  gacr:
+    domain: "gacr.cz"
+  mze:
+    domain: "eagri.cz"
+  szif:
+    domain: "szif.cz"
+  mdcr:
+    domain: "mdcr.cz"
+  nsa:
+    domain: "nsa.gov.cz"

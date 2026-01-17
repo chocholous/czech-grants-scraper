@@ -28,16 +28,33 @@ from playwright.async_api import async_playwright, Page, Browser
 from dateutil import parser as date_parser
 
 # Sub-scraper imports
-from subscrapers import SubScraperRegistry, GrantContent, Document
-from subscrapers.opst_cz import OPSTCzScraper
-from subscrapers.mv_gov_cz import MVGovCzScraper
-from subscrapers.nrb_cz import NRBCzScraper
-from subscrapers.irop_mmr_cz import IROPGovCzScraper
-from subscrapers.esfcr_cz import ESFCRCzScraper
-from subscrapers.opzp_cz import OPZPCzScraper
-from subscrapers.optak_gov_cz import OPTAKGovCzScraper
-from subscrapers.sfzp_cz import SFZPCzScraper
-from subscrapers.utils import download_document, convert_document_to_markdown
+from sources.registry import SubScraperRegistry
+from sources.models import GrantContent, Document
+from sources.opst_cz import OPSTCzScraper
+from sources.mv_gov_cz import MVGovCzScraper
+from sources.nrb_cz import NRBCzScraper
+from sources.irop_mmr_cz import IROPGovCzScraper
+from sources.esfcr_cz import ESFCRCzScraper
+from sources.opzp_cz import OPZPCzScraper
+from sources.optak_gov_cz import OPTAKGovCzScraper
+from sources.sfzp_cz import SFZPCzScraper
+from sources.mze_cz import MZeCzScraper
+from sources.mdcr_cz import MDCrScraper
+from sources.nsa_gov_cz import NSAGovCzScraper
+from sources.mfcr_cz import MFCRCzScraper
+from sources.eeagrants_cz import EEAGrantsCzScraper
+from sources.mkcr_cz import MKCRCzScraper
+from sources.army_cz import ArmyCzScraper
+from sources.mpo_cz import MPOCzScraper
+from sources.mzcr_cz import MZCrCzScraper
+from sources.justice_cz import JusticeCzScraper
+from sources.mzv_cz import MZVCzScraper
+from sources.vlada_cz import VladaCzScraper
+from sources.msmt_cz import MSMTCzScraper
+from sources.opjak_cz import OPJAKCzScraper
+from sources.tacr_cz import TACRCzScraper
+from sources.gacr_cz import GACRCzScraper
+from sources.utils import download_document, convert_document_to_markdown
 
 
 def load_config(config_path: str = "config.yml") -> Dict:
@@ -489,6 +506,22 @@ class DotaceuCrawler:
             self.scraper_registry.register(OPZPCzScraper())
             self.scraper_registry.register(OPTAKGovCzScraper())
             self.scraper_registry.register(SFZPCzScraper())
+            self.scraper_registry.register(MZeCzScraper())
+            self.scraper_registry.register(MDCrScraper())
+            self.scraper_registry.register(NSAGovCzScraper())
+            self.scraper_registry.register(MFCRCzScraper())
+            self.scraper_registry.register(EEAGrantsCzScraper())
+            self.scraper_registry.register(MKCRCzScraper())
+            self.scraper_registry.register(ArmyCzScraper())
+            self.scraper_registry.register(MPOCzScraper())
+            self.scraper_registry.register(MZCrCzScraper())
+            self.scraper_registry.register(JusticeCzScraper())
+            self.scraper_registry.register(MZVCzScraper())
+            self.scraper_registry.register(VladaCzScraper())
+            self.scraper_registry.register(MSMTCzScraper())
+            self.scraper_registry.register(OPJAKCzScraper())
+            self.scraper_registry.register(TACRCzScraper())
+            self.scraper_registry.register(GACRCzScraper())
             self.logger.info(f"Deep scraping enabled. Registered {self.scraper_registry.count()} sub-scrapers: {self.scraper_registry.list_scrapers()}")
 
     async def run(self, max_grants: Optional[int] = None):

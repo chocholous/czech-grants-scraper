@@ -58,6 +58,9 @@ class GrantContent:
     # Additional metadata
     additional_metadata: Dict = field(default_factory=dict)
 
+    # Deduplication
+    content_hash: Optional[str] = None
+
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization"""
         data = asdict(self)
