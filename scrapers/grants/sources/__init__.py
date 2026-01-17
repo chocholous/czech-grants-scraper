@@ -24,11 +24,11 @@ from .eeagrants_cz import EEAGrantsCzScraper
 from .mkcr_cz import MKCRCzScraper
 from .army_cz import ArmyCzScraper
 from .mpo_cz import MPOCzScraper
-
 from .msmt_cz import MSMTCzScraper
 from .opjak_cz import OPJAKCzScraper
 from .tacr_cz import TACRCzScraper
 from .gacr_cz import GACRCzScraper
+from .mzd_gov_cz import MzdGovCz2026Scraper # <-- ADDED NEW SCRAPER
 
 __all__ = [
     'GrantContent',
@@ -51,4 +51,5 @@ __all__ = [
     'OPJAKCzScraper',
     'TACRCzScraper',
     'GACRCzScraper',
+    'MzdGovCz2026Scraper', # <-- ADDED NEW SCRAPER
 ]

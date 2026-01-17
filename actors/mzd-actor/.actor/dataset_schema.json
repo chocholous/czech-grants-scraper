@@ -1,0 +1,13 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "MZD Grant Output",
+    "properties": {
+        "recordType": { "type": "string" },
+        "sourceName": { "type": "string" },
+        "title": { "type": "string" },
+        "deadline": { "type": "string" },
+        "fundingAmount": { "type": "object" },
+        "status": { "type": "string" },
+        "contentHash": { "type": "string" }
+    }
+}

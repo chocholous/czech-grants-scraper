@@ -1,0 +1,13 @@
+{
+  "name": "mzd-grants-scraper",
+  "version": "0.0.1",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js"
+  },
+  "dependencies": {
+    "apify": "^3.0.0",
+    "crawlee": "^3.0.0",
+    "cheerio": "^10.3.0"
+  }
+}

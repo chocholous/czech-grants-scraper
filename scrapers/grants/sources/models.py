@@ -66,3 +66,22 @@ class GrantContent:
         data = asdict(self)
         data['scraped_at'] = self.scraped_at.isoformat()
         return data
+
+# Define a mock Grant class to satisfy imports in older scrapers that might rely on it before full content extraction
+@dataclass
+class Grant:
+    title: Optional[str] = None
+    source: Optional[str] = None
+    sourceName: Optional[str] = None
+    grantUrl: Optional[str] = None
+    deadline: Optional[str] = None
+    description: Optional[str] = None
+    eligibility: Optional[List[str]] = field(default_factory=list)
+    fundingAmount: Optional[Dict] = None
+    status: Optional[str] = None
+    statusNotes: Optional[str] = None
+    extractedAt: Optional[str] = None
+    contentHash: Optional[str] = None
+    
+    def to_dict(self) -> Dict:
+        return asdict(self)
