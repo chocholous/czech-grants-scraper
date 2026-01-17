@@ -10,7 +10,7 @@ Build a single Apify Actor that scrapes Czech grant announcements and supported 
 ## Actor Overview (Apify)
 - **Single Actor** with two modes:
   - **Search-only**: query the existing dataset without scraping unless data is stale.
-  - **Refresh**: scrape all or selected sources and update dataset.
+  - **Refresh**: scrape all sources and update dataset.
 - **Storage**: Apify Dataset shared across runs (named dataset, e.g., `czech-grants`), plus Key-Value Store for metadata (last crawl timestamp per source).
 - **Output**: Dataset items for grants and charitable causes, plus run output summary.
 
@@ -29,7 +29,6 @@ Build a single Apify Actor that scrapes Czech grant announcements and supported 
   "deadlineRange": {"from": "YYYY-MM-DD", "to": "YYYY-MM-DD"},
   "onlyActive": true,
   "mode": "search|refresh|auto",
-  "sources": ["string URL"],
   "staleAfterDays": 7,
   "limit": 100
 }
@@ -37,7 +36,6 @@ Build a single Apify Actor that scrapes Czech grant announcements and supported 
 
 Notes:
 - `mode=auto` runs search first and triggers refresh for sources stale beyond `staleAfterDays`.
-- `sources` filters which sources to refresh; if empty, refresh all.
 
 ## Output Schema (Dataset Items)
 ### Grant Announcement
@@ -53,6 +51,8 @@ Notes:
   "description": "string",
   "criteria": ["string"],
   "conditions": ["string"],
+  "contact_email": ["string"],
+  "contact_phone": ["string"],
   "eligibility": ["string"],
   "fundingAmount": {"min": 0, "max": 0, "currency": "CZK"},
   "deadline": "YYYY-MM-DD",
@@ -67,6 +67,25 @@ Notes:
   "contentHash": "string"
 }
 ```
+#### Mandatory fields:
+```json
+{
+  "recordType": "grant",
+  "sourceId": "string",
+  "sourceName": "string",
+  "sourceUrl": "string",
+  "grantUrl": "string",
+  "title": "string",
+  "eligibility": ["string"],
+  "fundingAmount": {"min": 0, "max": 0, "currency": "CZK"},
+  "deadline": "YYYY-MM-DD",
+  "status": "ok|partial|error",
+  "statusNotes": "string",
+  "extractedAt": "YYYY-MM-DDTHH:MM:SSZ",
+  "contentHash": "string"
+}
+```
+
 
 ### Charitable Cause
 ```json
