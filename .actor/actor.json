@@ -1,0 +1,14 @@
+{
+  "actorSpecification": 1,
+  "name": "mz-grants-scraper",
+  "title": "MZ Grants Scraper",
+  "version": "0.1",
+  "dockerfile": "./Dockerfile",
+  "usesStandbyMode": true,
+  "storages": {
+    "dataset": "./.actor/dataset_schema.json"
+  },
+  "meta": {
+    "generatedBy": "claude-sonnet-4-5-20250929"
+  }
+}

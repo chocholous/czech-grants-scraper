@@ -1,0 +1,16 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "MZ Grants Scraper Output",
+  "properties": {
+    "dataset": {
+      "type": "string",
+      "title": "Grant Records Dataset",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    },
+    "runSummary": {
+      "type": "string",
+      "title": "Run Summary",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/keys/runSummary"
+    }
+  }
+}

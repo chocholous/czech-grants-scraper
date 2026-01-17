@@ -1,0 +1,59 @@
+{
+  "actorSpecification": 1,
+  "fields": {},
+  "views": {
+    "overview": {
+      "title": "Přehled grantů",
+      "description": "All grant records with key fields",
+      "transformation": {
+        "fields": [
+          "title",
+          "sourceName",
+          "fundingAmount",
+          "deadline",
+          "eligibility",
+          "status",
+          "grantUrl",
+          "extractedAt"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "title": {
+            "label": "Název",
+            "format": "text"
+          },
+          "sourceName": {
+            "label": "Zdroj",
+            "format": "text"
+          },
+          "fundingAmount": {
+            "label": "Částka",
+            "format": "object"
+          },
+          "deadline": {
+            "label": "Termín",
+            "format": "date"
+          },
+          "eligibility": {
+            "label": "Oprávnění žadatelé",
+            "format": "array"
+          },
+          "status": {
+            "label": "Stav",
+            "format": "text"
+          },
+          "grantUrl": {
+            "label": "URL",
+            "format": "link"
+          },
+          "extractedAt": {
+            "label": "Získáno",
+            "format": "date"
+          }
+        }
+      }
+    }
+  }
+}
