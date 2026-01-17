@@ -21,6 +21,7 @@ from bs4 import BeautifulSoup
 from .scrapers_lib.base import AbstractGrantSubScraper
 from .scrapers_lib.models import GrantContent, Document
 from .scrapers_lib.utils_simple import download_document
+from .ai_extractor import extract_grant_details, is_ai_extraction_available
 
 # Configurable constants (can be overridden via ENV vars)
 MZ_BASE_URL = os.getenv('MZ_BASE_URL', 'https://mzd.gov.cz')
@@ -52,75 +53,150 @@ class MZScraper(AbstractGrantSubScraper):
 
     def list_program_urls(self) -> List[str]:
         """
-        Scrape category page and extract all program URLs.
+        Scrape category pages and extract all grant call URLs.
+
+        Strategy:
+        1. Load main category pages for different years (2025, 2026)
+        2. Find all subcategories (grant programs)
+        3. For each subcategory, find the main call/announcement page
+        4. Return list of call URLs
 
         Returns:
-            List of grant program URLs
+            List of grant call URLs
         """
-        category_url = urljoin(MZ_BASE_URL, MZ_CATEGORY_PATH)
-        self.logger.info(f"Fetching category page: {category_url}")
+        all_call_urls = []
 
+        # Category URLs for different years
+        category_urls = [
+            urljoin(MZ_BASE_URL, '/category/dotace-a-programove-financovani/narodni-dotacni-programy-2026/'),
+            urljoin(MZ_BASE_URL, '/category/dotace-a-programove-financovani/narodni-dotacni-programy-pro-rok-2025/'),
+        ]
+
+        for category_url in category_urls:
+            self.logger.info(f"Processing category: {category_url}")
+
+            try:
+                # Find all program subcategories
+                subcategories = self._find_subcategories(category_url)
+                self.logger.info(f"Found {len(subcategories)} program subcategories")
+
+                # For each subcategory, find the call page
+                for subcat_name, subcat_url in subcategories:
+                    call_url = self._find_call_page(subcat_url)
+                    if call_url:
+                        all_call_urls.append(call_url)
+                        self.logger.info(f"Found call: {subcat_name} -> {call_url}")
+                    else:
+                        self.logger.warning(f"No call found for: {subcat_name}")
+
+            except Exception as e:
+                self.logger.error(f"Failed to process category {category_url}: {e}")
+                continue
+
+        self.logger.info(f"Total calls found: {len(all_call_urls)}")
+        return all_call_urls
+
+    def _find_subcategories(self, category_url: str) -> List[tuple]:
+        """
+        Find all program subcategories within a year category.
+
+        Args:
+            category_url: URL of year category (e.g., .../narodni-dotacni-programy-2026/)
+
+        Returns:
+            List of (name, url) tuples for each program subcategory
+        """
         try:
             response = requests.get(category_url, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
             soup = BeautifulSoup(response.content, 'html.parser')
 
-            # Extract program links
-            # Typical WordPress category structure:
-            # - .entry-title a
-            # - article h2 a
-            # - .post-title a
-            program_urls = []
+            subcategories = []
+            all_links = soup.find_all('a', href=True)
 
-            # Try multiple selector patterns
-            selectors = [
-                'article .entry-title a',
-                'article h2 a',
-                '.post-title a',
-                '.entry-content a',
-                'main article a',
-            ]
+            for link in all_links:
+                href = link.get('href', '')
+                text = link.get_text(strip=True)
 
-            for selector in selectors:
-                links = soup.select(selector)
-                for link in links:
-                    href = link.get('href')
-                    if href:
-                        # Filter out non-program links (archives, categories, etc.)
-                        if self._is_program_link(href):
-                            full_url = urljoin(category_url, href)
-                            if full_url not in program_urls:
-                                program_urls.append(full_url)
+                # Find links that contain parent category path (subcategories)
+                # Extract category slug from URL for matching
+                category_parts = urlparse(category_url).path.strip('/').split('/')
+                if len(category_parts) > 0:
+                    category_slug = category_parts[-1]  # e.g., "narodni-dotacni-programy-2026"
 
-            self.logger.info(f"Found {len(program_urls)} program URLs")
-            return program_urls
+                    # Subcategory must contain parent slug and be different from parent
+                    if category_slug in href and href != category_url:
+                        # Exclude feeds, tags, etc.
+                        if not any(x in href for x in ['/feed', '/tag/', '#', 'javascript']):
+                            # Must be category URL
+                            if '/category/' in href:
+                                subcategories.append((text, href))
+
+            # Deduplicate
+            seen = set()
+            unique = []
+            for name, url in subcategories:
+                if url not in seen:
+                    seen.add(url)
+                    unique.append((name, url))
+
+            return unique
 
         except Exception as e:
-            self.logger.error(f"Failed to fetch category page: {e}")
+            self.logger.error(f"Failed to find subcategories for {category_url}: {e}")
             return []
 
-    def _is_program_link(self, href: str) -> bool:
-        """Filter out non-program links"""
-        # Exclude common non-program paths
-        exclude_patterns = [
-            '/category/',
-            '/tag/',
-            '/author/',
-            '/page/',
-            '/wp-',
-            '#',
-            'javascript:',
-        ]
+    def _find_call_page(self, subcategory_url: str) -> Optional[str]:
+        """
+        Find the main call/announcement page within a program subcategory.
 
-        for pattern in exclude_patterns:
-            if pattern in href:
-                return False
+        Args:
+            subcategory_url: URL of program subcategory
 
-        return True
+        Returns:
+            URL of the main call page, or None if not found
+        """
+        try:
+            response = requests.get(subcategory_url, timeout=REQUEST_TIMEOUT)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            # Find call pages (výzva keywords)
+            call_keywords = ['výzva', 'vyzva', 'žádost', 'zadost', 'vyhlášení', 'vyhlaseni']
+            all_links = soup.find_all('a', href=True)
+
+            call_pages = []
+            for link in all_links:
+                href = link.get('href', '')
+                text = link.get_text(strip=True)
+
+                # Look for call keywords in link text
+                if any(kw in text.lower() for kw in call_keywords):
+                    # Must be absolute mzd.gov.cz URL (not category or other)
+                    if 'mzd.gov.cz' in href and href.startswith('http'):
+                        # Exclude categories, tags, feeds
+                        if not any(x in href for x in ['/category/', '/tag/', '/feed']):
+                            call_pages.append((text, href))
+
+            # Deduplicate and return first (usually the main call)
+            seen = set()
+            for text, url in call_pages:
+                if url not in seen:
+                    seen.add(url)
+                    return url  # Return first unique call
+
+            return None
+
+        except Exception as e:
+            self.logger.error(f"Failed to find call page for {subcategory_url}: {e}")
+            return None
 
     async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
         """
         Extract full grant content from MZ page.
+
+        Uses AI-powered extraction (Claude Haiku) to enhance regex-based parsing.
+        Falls back to regex-only if AI is not available.
 
         Args:
             url: Full URL to grant page
@@ -135,25 +211,45 @@ class MZScraper(AbstractGrantSubScraper):
             response.raise_for_status()
             soup = BeautifulSoup(response.content, 'html.parser')
 
-            # Extract core content
+            # Extract core content (regex-based)
             title = self._extract_title(soup)
             description = self._extract_description(soup)
             summary = self._extract_summary(soup)
-
-            # Extract deadline
             deadline = self._extract_deadline(soup)
-
-            # Extract funding amounts
             funding_amounts = self._extract_funding_amounts(soup)
-
-            # Extract documents
             documents = self._extract_documents(soup, url)
-
-            # Extract contact info
             contact_email = self._extract_contact_email(soup)
-
-            # Extract eligible recipients
             eligible_recipients = self._extract_eligible_recipients(soup)
+
+            # AI-enhanced extraction (if API key available)
+            if is_ai_extraction_available():
+                self.logger.info(f"Using AI extraction for enhanced data quality: {url}")
+
+                # Get clean text for AI
+                page_text = soup.get_text(separator='\n', strip=True)
+
+                # Call AI extractor
+                ai_data = extract_grant_details(page_text, title or url)
+
+                # Use AI results to fill missing fields or override unreliable regex
+                if not deadline and ai_data.get('deadline'):
+                    deadline = ai_data['deadline']
+                    self.logger.info(f"AI extracted deadline: {deadline}")
+
+                if not eligible_recipients and ai_data.get('eligibility'):
+                    eligible_recipients = ai_data['eligibility']
+                    self.logger.info(f"AI extracted eligibility: {len(eligible_recipients)} recipients")
+
+                if not funding_amounts and (ai_data.get('funding_min') or ai_data.get('funding_max')):
+                    funding_amounts = {
+                        'min': ai_data['funding_min'],
+                        'max': ai_data['funding_max'],
+                        'currency': 'CZK',
+                    }
+                    self.logger.info(f"AI extracted funding: {funding_amounts}")
+
+                if not summary and ai_data.get('summary'):
+                    summary = ai_data['summary']
 
             # Build GrantContent object
             content = GrantContent(
@@ -203,9 +299,11 @@ class MZScraper(AbstractGrantSubScraper):
 
         Returns the full text content.
         """
-        # Try common content containers
+        # Try common content containers (MZ uses wysiwyg-content)
         selectors = [
+            '.wysiwyg-content',
             '.entry-content',
+            '#content',
             'article .content',
             'main .content',
             'article',
@@ -217,12 +315,17 @@ class MZScraper(AbstractGrantSubScraper):
             if content_elem:
                 # Get all text with paragraph separation
                 text_parts = []
-                for elem in content_elem.find_all(['p', 'div', 'li', 'h1', 'h2', 'h3', 'h4']):
+                for elem in content_elem.find_all(['p']):
                     text = elem.get_text(strip=True)
-                    if text and len(text) > 20:  # Filter out short fragments
-                        text_parts.append(text)
+                    # Filter out short fragments and navigation
+                    if text and len(text) > 30:
+                        # Skip common non-content patterns
+                        if not any(skip in text.lower() for skip in ['menu', 'navigace', 'přeskočit']):
+                            text_parts.append(text)
 
-                return '\n\n'.join(text_parts) if text_parts else None
+                if text_parts:
+                    # Limit to reasonable length (first 5-10 paragraphs)
+                    return '\n\n'.join(text_parts[:10])
 
         return None
 
@@ -375,24 +478,35 @@ class MZScraper(AbstractGrantSubScraper):
         return None
 
     def _extract_eligible_recipients(self, soup: BeautifulSoup) -> Optional[List[str]]:
-        """Extract list of eligible recipients"""
+        """
+        Extract list of eligible recipients.
+
+        Note: For MZ grants, eligibility info is typically in PDF attachments,
+        not on the HTML page. This method returns None for MVP, allowing
+        mapper to set appropriate default value and partial status.
+        """
+        # MZ grants have eligibility info in PDF attachments (Výzva, Metodika)
+        # For MVP, we return None and rely on PDF links in attachments
+        # Future: Implement PDF parsing to extract eligibility
+
+        # Try to find if there's explicit list on page (rare)
         text = soup.get_text()
 
-        # Look for common patterns
-        patterns = [
-            r'oprávněn[íý]\s+žadatel[ée]?[:\s]+([^\n\.]+)',
-            r'žadatel[ée]?[:\s]+([^\n\.]+)',
-            r'eligible\s+applicants[:\s]+([^\n\.]+)',
-        ]
+        # Only match very specific patterns (avoid false positives)
+        # Pattern must have "oprávnění žadatelé:" followed by list
+        pattern = r'oprávněn[íý]\s+žadatel[ée]?\s*[:]\s*([^\n]{20,200})'
+        match = re.search(pattern, text, re.IGNORECASE)
 
-        for pattern in patterns:
-            match = re.search(pattern, text, re.IGNORECASE)
-            if match:
-                text = match.group(1)
-                # Split by common separators
-                recipients = re.split(r'[,;]|\s+-\s+', text)
-                return [r.strip() for r in recipients if r.strip()]
+        if match:
+            text = match.group(1)
+            # Check if it's actually a list (contains commas or separators)
+            if ',' in text or ';' in text or ' a ' in text:
+                recipients = re.split(r'[,;]|\s+a\s+', text)
+                recipients = [r.strip() for r in recipients if r.strip() and len(r.strip()) > 3]
+                if recipients:
+                    return recipients
 
+        # No eligibility found on HTML page
         return None
 
     # ===== Helper Methods =====

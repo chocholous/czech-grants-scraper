@@ -13,10 +13,10 @@ from typing import Dict, List, Optional
 
 from apify import Actor
 
-from scraper import MZScraper
-from mapper import map_to_prd_schema, validate_prd_record
-from storage import DatasetManager, KVStoreManager
-from utils import is_date_in_past
+from .scraper import MZScraper
+from .mapper import map_to_prd_schema, validate_prd_record
+from .storage import DatasetManager, KVStoreManager
+from .utils import is_date_in_past
 
 
 # Source metadata

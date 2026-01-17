@@ -9,7 +9,7 @@
     "baseDockerImage": "apify/actor-python:3.13",
     "dockerfile": "./Dockerfile"
   },
-  "usesStandbyMode": false,
+  "usesStandbyMode": true,
   "storages": {
     "dataset": "./.actor/dataset_schema.json"
   },

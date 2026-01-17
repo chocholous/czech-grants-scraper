@@ -75,7 +75,8 @@ def map_to_prd_schema(
 
     if missing_fields:
         status = 'partial'
-        status_notes = f"Missing fields: {', '.join(missing_fields)}"
+        # Note: For MZ grants, eligibility and funding are in PDF attachments
+        status_notes = f"Missing fields: {', '.join(missing_fields)}. Details available in PDF attachments (Výzva, Metodika)."
     else:
         status = 'ok'
         status_notes = 'All mandatory fields present'

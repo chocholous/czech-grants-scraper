@@ -33,6 +33,15 @@ data/
 logs/
 *.log
 
+# Apify storage (runtime data)
+storage/
+apify_storage/
+output/
+
+# Test fixtures (downloaded HTML pages)
+*_page.html
+*_detail_page.html
+
 # IDE
 .idea/
 .vscode/
