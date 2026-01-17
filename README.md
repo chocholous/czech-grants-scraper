@@ -69,6 +69,57 @@ Upravte `scrapers/grants/config.yml` pro nastavení:
 - Výstupního formátu
 - Limitů a timeoutů
 
+### Apify Actor
+
+Scraper je dostupný jako Apify Actor. Podporované vstupní parametry:
+
+| Parametr | Typ | Výchozí | Popis |
+|----------|-----|---------|-------|
+| `mode` | string | `refresh` | `refresh` = scrapovat, `search` = vyhledávat, `auto` = obojí |
+| `maxGrants` | integer | - | Max počet grantů (pro testování) |
+| `deepScrape` | boolean | `false` | Následovat odkazy na zdrojové weby |
+| `enableLlm` | boolean | `false` | Povolit LLM obohacení dat |
+| `llmModel` | string | `anthropic/claude-haiku-4.5` | Model pro LLM extrakci |
+| `testUrls` | array | - | Testovat konkrétní URL s pod-scrapery |
+
+#### LLM Enrichment
+
+Funkce `enableLlm` používá LLM k extrakci strukturovaných informací z textu grantových výzev:
+
+- **Kritéria způsobilosti** - kategorizovaná podle typu (žadatel, projekt, finanční, územní)
+- **Hodnotící kritéria** - s body/váhami pokud jsou uvedeny
+- **Podporované/nepodporované aktivity**
+- **Požadované přílohy**
+- **Tematická klíčová slova** - pro kategorizaci
+
+Příklad použití:
+
+```json
+{
+  "mode": "refresh",
+  "deepScrape": true,
+  "enableLlm": true,
+  "llmModel": "anthropic/claude-haiku-4.5",
+  "maxGrants": 5
+}
+```
+
+Výstup obsahuje pole `enhancedInfo`:
+
+```json
+{
+  "enhancedInfo": {
+    "eligibility_criteria": [
+      {"criterion": "Příjemcem musí být kraj", "category": "applicant", "is_mandatory": true}
+    ],
+    "territorial_restrictions": "Karlovarský kraj",
+    "thematic_keywords": ["vouchery", "podnikání", "transformace"]
+  }
+}
+```
+
+LLM využívá [Apify OpenRouter Actor](https://apify.com/apify/openrouter) pro přístup k modelům.
+
 ## Struktura projektu
 
 ```
