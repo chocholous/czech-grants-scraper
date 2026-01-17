@@ -1,0 +1,35 @@
+# Environment files with secrets
+.env
+.envrc
+
+# Virtual environments
+.venv/
+venv/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data
+storage/
+data/
+logs/
+
+# Docs
+docs/
+*.md
+!README.md

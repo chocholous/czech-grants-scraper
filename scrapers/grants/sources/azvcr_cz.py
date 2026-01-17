@@ -55,7 +55,9 @@ class AZVCRCzScraper(AbstractGrantSubScraper):
         parsed = urlparse(url)
         return self.DOMAIN in parsed.netloc
 
-    async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
+    async def extract_content(
+        self, url: str, grant_metadata: dict, use_llm: Optional[bool] = None
+    ) -> Optional[GrantContent]:
         """Extract grant content from azvcr.cz page"""
         try:
             response = requests.get(url, timeout=10)
@@ -92,6 +94,13 @@ class AZVCRCzScraper(AbstractGrantSubScraper):
                 f"Extracted content from {url}: {len(documents)} documents, "
                 f"{len(description or '')} chars description"
             )
+
+            # LLM enrichment (optional)
+            for elem in soup.select("nav, footer, script, style, header"):
+                elem.decompose()
+            page_text = soup.get_text(" ", strip=True)
+            content = await self.enrich_with_llm(content, page_text, use_llm)
+
             return content
         except Exception as e:
             self.logger.error(f"Failed to extract content from {url}: {e}")

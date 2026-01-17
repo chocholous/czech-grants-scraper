@@ -32,15 +32,14 @@ class IROPGovCzScraper(AbstractGrantSubScraper):
         'annex': ['příloha'],
     }
 
-    def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
-
     def can_handle(self, url: str) -> bool:
         """Check if URL is from irop domain"""
         parsed = urlparse(url)
         return any(domain in parsed.netloc for domain in self.DOMAINS)
 
-    async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
+    async def extract_content(
+        self, url: str, grant_metadata: dict, use_llm: Optional[bool] = None
+    ) -> Optional[GrantContent]:
         """Extract content from irop.gov.cz grant page"""
         try:
             # Follow redirects
@@ -69,6 +68,13 @@ class IROPGovCzScraper(AbstractGrantSubScraper):
             )
 
             self.logger.info(f"Extracted content from {response.url}: {len(documents)} documents")
+
+            # LLM enrichment (optional)
+            for elem in soup.select("nav, footer, script, style, header"):
+                elem.decompose()
+            page_text = soup.get_text(" ", strip=True)
+            content = await self.enrich_with_llm(content, page_text, use_llm)
+
             return content
 
         except Exception as e:

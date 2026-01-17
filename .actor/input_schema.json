@@ -1,0 +1,135 @@
+{
+    "title": "Czech Grants Scraper Input",
+    "description": "Configuration for the Czech Grants Scraper Actor",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "mode": {
+            "title": "Mode",
+            "type": "string",
+            "description": "Operation mode: 'refresh' to scrape new data, 'search' to query existing data, 'auto' for both",
+            "default": "refresh",
+            "enum": ["refresh", "search", "auto"],
+            "enumTitles": ["Refresh", "Search", "Auto"]
+        },
+        "maxGrants": {
+            "title": "Max Grants",
+            "type": "integer",
+            "description": "Maximum number of grants to scrape (for testing). Leave empty for all grants.",
+            "minimum": 1
+        },
+        "deepScrape": {
+            "title": "Deep Scrape",
+            "type": "boolean",
+            "description": "Enable deep scraping to follow links and extract detailed content from source websites",
+            "default": false
+        },
+        "enableLlm": {
+            "title": "Enable LLM Enrichment",
+            "type": "boolean",
+            "description": "Use LLM to extract detailed eligibility criteria, evaluation criteria, and thematic keywords from grant pages. Requires APIFY_TOKEN for OpenRouter access. Increases scraping time and cost.",
+            "default": false
+        },
+        "llmModel": {
+            "title": "LLM Model",
+            "type": "string",
+            "description": "OpenRouter model for LLM extraction. Claude Sonnet 4.5 offers best accuracy for Czech legal text. Use Haiku 4.5 for faster/cheaper extraction with good quality.",
+            "default": "anthropic/claude-haiku-4.5",
+            "enum": [
+                "anthropic/claude-sonnet-4.5",
+                "anthropic/claude-haiku-4.5",
+                "openai/gpt-5",
+                "openai/gpt-5-mini",
+                "google/gemini-2.5-pro"
+            ],
+            "enumTitles": [
+                "Claude Sonnet 4.5 (best accuracy)",
+                "Claude Haiku 4.5 (faster, cheaper)",
+                "GPT-5",
+                "GPT-5 Mini (budget option)",
+                "Gemini 2.5 Pro"
+            ]
+        },
+        "testUrls": {
+            "title": "Test URLs",
+            "type": "array",
+            "description": "List of specific grant page URLs to test sub-scrapers directly (bypasses main scraper)",
+            "items": {
+                "type": "string"
+            }
+        },
+        "query": {
+            "title": "Search Query",
+            "type": "string",
+            "description": "Text to search for in grant titles, summaries, and descriptions"
+        },
+        "categories": {
+            "title": "Categories",
+            "type": "array",
+            "description": "Filter by grant categories",
+            "items": {
+                "type": "string"
+            }
+        },
+        "regions": {
+            "title": "Regions",
+            "type": "array",
+            "description": "Filter by regions",
+            "items": {
+                "type": "string"
+            }
+        },
+        "eligibility": {
+            "title": "Eligibility",
+            "type": "array",
+            "description": "Filter by eligible applicant types",
+            "items": {
+                "type": "string"
+            }
+        },
+        "fundingRange": {
+            "title": "Funding Range",
+            "type": "object",
+            "description": "Filter by funding amount range",
+            "properties": {
+                "min": {
+                    "type": "integer",
+                    "description": "Minimum funding amount"
+                },
+                "max": {
+                    "type": "integer",
+                    "description": "Maximum funding amount"
+                }
+            }
+        },
+        "deadlineRange": {
+            "title": "Deadline Range",
+            "type": "object",
+            "description": "Filter by application deadline range",
+            "properties": {
+                "from": {
+                    "type": "string",
+                    "description": "Start date (YYYY-MM-DD)"
+                },
+                "to": {
+                    "type": "string",
+                    "description": "End date (YYYY-MM-DD)"
+                }
+            }
+        },
+        "onlyActive": {
+            "title": "Only Active",
+            "type": "boolean",
+            "description": "Only return active grants",
+            "default": true
+        },
+        "limit": {
+            "title": "Result Limit",
+            "type": "integer",
+            "description": "Maximum number of results to return",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 1000
+        }
+    }
+}

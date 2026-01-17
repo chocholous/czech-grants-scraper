@@ -35,6 +35,8 @@ dependencies = [
     "mammoth>=1.7.1",
     "markdownify>=0.12.1",
     "requests>=2.31.0",
+    "pydantic-ai>=0.1.0",
+    "openai>=1.0.0",
 ]
 
 [project.optional-dependencies]

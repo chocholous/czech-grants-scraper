@@ -31,15 +31,14 @@ class ESFCRCzScraper(AbstractGrantSubScraper):
         'guidelines': ['příručka', 'pokyny'],
     }
 
-    def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
-
     def can_handle(self, url: str) -> bool:
         """Check if URL is from esfcr.cz domain"""
         parsed = urlparse(url)
         return self.DOMAIN in parsed.netloc
 
-    async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
+    async def extract_content(
+        self, url: str, grant_metadata: dict, use_llm: Optional[bool] = None
+    ) -> Optional[GrantContent]:
         """Extract content from esfcr.cz grant page"""
         try:
             response = requests.get(url, timeout=10)
@@ -49,7 +48,7 @@ class ESFCRCzScraper(AbstractGrantSubScraper):
 
             # Extract metadata from Czech text patterns
             metadata = self._extract_metadata(soup)
-            
+
             description = self._extract_description(soup)
             funding = self._extract_funding(soup, metadata)
             documents = self._extract_documents(soup, url)
@@ -71,6 +70,13 @@ class ESFCRCzScraper(AbstractGrantSubScraper):
             )
 
             self.logger.info(f"Extracted content from {url}: {len(documents)} documents")
+
+            # LLM enrichment (optional)
+            for elem in soup.select("nav, footer, script, style, header"):
+                elem.decompose()
+            page_text = soup.get_text(" ", strip=True)
+            content = await self.enrich_with_llm(content, page_text, use_llm)
+
             return content
 
         except Exception as e:

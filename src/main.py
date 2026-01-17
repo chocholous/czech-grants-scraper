@@ -147,6 +147,13 @@ async def run_actor():
 
     results: List[Dict[str, Any]] = []
 
+    # LLM enrichment settings
+    enable_llm = input_data.get("enableLlm", False)
+    llm_model = input_data.get("llmModel", "anthropic/claude-haiku-4.5")
+
+    if enable_llm:
+        Actor.log.info(f"LLM enrichment enabled with model: {llm_model}")
+
     # Test mode: run sub-scrapers directly on provided URLs
     test_urls = input_data.get("testUrls", [])
     if test_urls:
@@ -167,19 +174,19 @@ async def run_actor():
             import logging
             logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-            # Register all sub-scrapers
+            # Register all sub-scrapers with LLM settings
             registry = SubScraperRegistry()
-            registry.register(GACRCzScraper())
-            registry.register(TACRCzScraper())
-            registry.register(AZVCRCzScraper())
-            registry.register(OPSTCzScraper())
-            registry.register(OPZPCzScraper())
-            registry.register(NRBCzScraper())
-            registry.register(SFZPCzScraper())
-            registry.register(ESFCRCzScraper())
-            registry.register(MVGovCzScraper())
-            registry.register(IROPGovCzScraper())
-            registry.register(OPTAKGovCzScraper())
+            registry.register(GACRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(TACRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(AZVCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(OPSTCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(OPZPCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(NRBCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(SFZPCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(ESFCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(MVGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(IROPGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            registry.register(OPTAKGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
 
             Actor.log.info(f"Registered {registry.count()} sub-scrapers: {registry.list_scrapers()}")
 
@@ -197,8 +204,8 @@ async def run_actor():
                     content = await scraper.extract_content(url, {"title": "Test", "external_id": "test"})
                     if content:
                         Actor.log.info(f"Extracted content: {len(content.description or '')} chars description, {len(content.documents)} documents")
-                        # Push to dataset
-                        await dataset.push_data({
+                        # Build data dict
+                        data = {
                             "recordType": "grant",
                             "sourceId": scraper.get_scraper_name(),
                             "sourceUrl": url,
@@ -210,7 +217,13 @@ async def run_actor():
                             "contactEmail": content.contact_email,
                             "eligibleRecipients": content.eligible_recipients,
                             "scrapedAt": content.scraped_at.isoformat() if content.scraped_at else None,
-                        })
+                        }
+                        # Add LLM-enhanced data if available
+                        if content.enhanced_info:
+                            data["enhancedInfo"] = content.enhanced_info.to_dict()
+                            Actor.log.info(f"LLM enrichment: {len(content.enhanced_info.eligibility_criteria)} criteria, {len(content.enhanced_info.thematic_keywords)} keywords")
+                        # Push to dataset
+                        await dataset.push_data(data)
                         Actor.log.info(f"Pushed content to dataset")
                     else:
                         Actor.log.warning(f"No content extracted from {url}")

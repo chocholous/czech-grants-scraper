@@ -41,15 +41,14 @@ class NRBCzScraper(AbstractGrantSubScraper):
         'annex': ['příloha', 'priloha', 'annex', 'attachment'],
     }
 
-    def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
-
     def can_handle(self, url: str) -> bool:
         """Check if URL is from nrb.cz or nrinvesticni.cz"""
         parsed = urlparse(url)
         return any(domain in parsed.netloc for domain in self.DOMAINS)
 
-    async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
+    async def extract_content(
+        self, url: str, grant_metadata: dict, use_llm: Optional[bool] = None
+    ) -> Optional[GrantContent]:
         """Extract content from nrb.cz/nrinvesticni.cz page"""
         try:
             response = requests.get(url, timeout=10)
@@ -98,6 +97,13 @@ class NRBCzScraper(AbstractGrantSubScraper):
             )
 
             self.logger.info(f"Extracted content from {url} - Programme: {programme}, Suspended: {is_suspended}")
+
+            # LLM enrichment (optional)
+            for elem in soup.select("nav, footer, script, style, header"):
+                elem.decompose()
+            page_text = soup.get_text(" ", strip=True)
+            content = await self.enrich_with_llm(content, page_text, use_llm)
+
             return content
 
         except Exception as e:
