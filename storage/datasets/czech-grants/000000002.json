@@ -1,0 +1,40 @@
+{
+  "recordType": "grant",
+  "sourceId": "mz-grants",
+  "sourceName": "Ministerstvo zdravotnictví",
+  "sourceUrl": "https://mzd.gov.cz/vysledky-dotacniho-rizeni-zarazeni-do-kategorie-postoupil-nepostoupil-pz-2026/",
+  "grantUrl": "https://mzd.gov.cz/vysledky-dotacniho-rizeni-zarazeni-do-kategorie-postoupil-nepostoupil-pz-2026/",
+  "title": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil",
+  "eligibility": [
+    "Není specifikováno"
+  ],
+  "fundingAmount": {
+    "min": 0,
+    "max": 0,
+    "currency": "CZK"
+  },
+  "deadline": null,
+  "status": "partial",
+  "statusNotes": "Missing fields: deadline",
+  "extractedAt": "2026-01-17T14:22:46.046769+00:00",
+  "contentHash": "3020297f666176413eaef9e1ece989b81a76d5d47caa6bafac71a0f4536ea1bd",
+  "summary": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil",
+  "description": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil",
+  "contact_email": [
+    "podatelna@mzd.gov.cz"
+  ],
+  "contact_phone": [],
+  "criteria": [],
+  "conditions": [],
+  "applicationWindow": {},
+  "regions": [],
+  "categories": [],
+  "attachments": [
+    {
+      "title": "PZ-2026-vysledky-formalniho-hodnoceni.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/12/PZ-2026-vysledky-formalniho-hodnoceni.xlsx",
+      "type": "xlsx"
+    }
+  ],
+  "language": "cs"
+}

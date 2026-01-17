@@ -1,0 +1,90 @@
+{
+  "recordType": "grant",
+  "sourceId": "mz-grants",
+  "sourceName": "Ministerstvo zdravotnictví",
+  "sourceUrl": "https://mzd.gov.cz/vyzva-program-vyrovnavani-prilezitosti-pro-obcany-se-zdravotnim-postizenim-2026/",
+  "grantUrl": "https://mzd.gov.cz/vyzva-program-vyrovnavani-prilezitosti-pro-obcany-se-zdravotnim-postizenim-2026/",
+  "title": "Výzva k předkládání žádostí o přidělení finančních prostředků v rámci dotačního programu Vyrovnávání příležitostí pro občany se zdravotním postižením pro rok 2026",
+  "eligibility": [
+    "Není specifikováno"
+  ],
+  "fundingAmount": {
+    "min": 0,
+    "max": 0,
+    "currency": "CZK"
+  },
+  "deadline": "2025-09-30",
+  "status": "partial",
+  "statusNotes": "Missing fields: eligibility, fundingAmount",
+  "extractedAt": "2026-01-17T14:22:45.913134+00:00",
+  "contentHash": "41350f4d458b8f5b8161b9e61e4b24fb519795c84985c0dbade3bebeea03d257",
+  "summary": "Ministerstvo zdravotnictví zveřejňuje Výzvu k předkládání žádostí o přidělení finančních prostředků v rámci dotačního programu Vyrovnávání příležitostí pro občany se zdravotním postižením pro rok 2026.",
+  "description": "Ministerstvo zdravotnictví zveřejňuje Výzvu k předkládání žádostí o přidělení finančních prostředků v rámci dotačního programu Vyrovnávání příležitostí pro občany se zdravotním postižením pro rok 2026. Možnost podávat žádosti o dotaci bude otevřena od 29. srpna do 30. září 2025 (včetně) způsobem uve",
+  "contact_email": [
+    "grantys@nap.cz"
+  ],
+  "contact_phone": [],
+  "criteria": [],
+  "conditions": [],
+  "applicationWindow": {},
+  "regions": [],
+  "categories": [],
+  "attachments": [
+    {
+      "title": "Výzva programu (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/Vyzva-PVP-2026.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "Metodika programu (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/Metodika-PVP-2026.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "Grantys - manuál pro žadatele (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/Grantys-–-manual-pro-zadatele-MZCR.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "PVP_2026_Podrobny-rozpocet-materialu.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/PVP_2026_Podrobny-rozpocet-materialu.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "PVP_2026_Podrobny-rozpocet-sluzeb.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/PVP_2026_Podrobny-rozpocet-sluzeb.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "PVP_2026_Prehled-zamestnancu.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/PVP_2026_Prehled-zamestnancu.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "PVP_2026_Ostatni-osobni-vydaje.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/PVP_2026_Ostatni-osobni-vydaje.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "PVP_2026_Edicni-a-medialni-cinnost_souhrnna-tabulka.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/PVP_2026_Edicni-a-medialni-cinnost_souhrnna-tabulka.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "PVP_2026_Prednaskova-cinnost_souhrnna-tabulka.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/PVP_2026_Prednaskova-cinnost_souhrnna-tabulka.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "PVP_2026_Pobytove-akce_souhrnna-tabulka.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/PVP_2026_Pobytove-akce_souhrnna-tabulka.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "PVP_2026_Edukacni-dochazkove-akce-kurzy-vycviky_souhrnna-tabulka.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/PVP_2026_Edukacni-dochazkove-akce-kurzy-vycviky_souhrnna-tabulka.xlsx",
+      "type": "xlsx"
+    }
+  ],
+  "language": "cs"
+}

@@ -1,0 +1,40 @@
+{
+  "recordType": "grant",
+  "sourceId": "mz-grants",
+  "sourceName": "Ministerstvo zdravotnictví",
+  "sourceUrl": "https://mzd.gov.cz/vysledky-dotacniho-rizeni-zarazeni-do-kategorie-postoupil-nepostoupil-hiv-2026/",
+  "grantUrl": "https://mzd.gov.cz/vysledky-dotacniho-rizeni-zarazeni-do-kategorie-postoupil-nepostoupil-hiv-2026/",
+  "title": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil pro rok 2026",
+  "eligibility": [
+    "Není specifikováno"
+  ],
+  "fundingAmount": {
+    "min": 0,
+    "max": 0,
+    "currency": "CZK"
+  },
+  "deadline": null,
+  "status": "partial",
+  "statusNotes": "Missing fields: deadline",
+  "extractedAt": "2026-01-17T14:22:46.580747+00:00",
+  "contentHash": "4d6d3f69dad4d9340a88523b15a786b3aa6ad61be86a9168ec8d9e5e8c68f067",
+  "summary": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil pro rok 2026",
+  "description": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil pro rok 2026",
+  "contact_email": [
+    "podatelna@mzd.gov.cz"
+  ],
+  "contact_phone": [],
+  "criteria": [],
+  "conditions": [],
+  "applicationWindow": {},
+  "regions": [],
+  "categories": [],
+  "attachments": [
+    {
+      "title": "HIV_2026_Seznam-Postoupil_nepostoupil.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/12/HIV_2026_Seznam-Postoupil_nepostoupil.xlsx",
+      "type": "xlsx"
+    }
+  ],
+  "language": "cs"
+}

@@ -1,0 +1,92 @@
+{
+  "title": "MZ Grants Scraper Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "mode": {
+      "title": "Mode",
+      "type": "string",
+      "description": "Execution mode: 'search' (query dataset only), 'refresh' (force scrape), 'auto' (scrape if stale)",
+      "default": "auto",
+      "enum": ["search", "refresh", "auto"],
+      "enumTitles": ["Search Only", "Force Refresh", "Auto (Recommended)"]
+    },
+    "query": {
+      "title": "Search Query",
+      "type": "string",
+      "description": "Keywords to search for in grants (title, description)",
+      "editor": "textfield"
+    },
+    "categories": {
+      "title": "Categories",
+      "type": "array",
+      "description": "Filter by grant categories",
+      "editor": "stringList"
+    },
+    "regions": {
+      "title": "Regions",
+      "type": "array",
+      "description": "Filter by regions",
+      "editor": "stringList"
+    },
+    "eligibility": {
+      "title": "Eligibility",
+      "type": "array",
+      "description": "Filter by eligible recipients",
+      "editor": "stringList"
+    },
+    "fundingRange": {
+      "title": "Funding Range",
+      "type": "object",
+      "description": "Filter by funding amount range (CZK)",
+      "editor": "json",
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "deadlineRange": {
+      "title": "Deadline Range",
+      "type": "object",
+      "description": "Filter by deadline date range",
+      "editor": "json",
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date"
+        },
+        "to": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "onlyActive": {
+      "title": "Only Active Grants",
+      "type": "boolean",
+      "description": "Return only grants with future deadlines",
+      "default": true
+    },
+    "staleAfterDays": {
+      "title": "Stale After Days",
+      "type": "integer",
+      "description": "Number of days before data is considered stale (used in 'auto' mode)",
+      "default": 7,
+      "minimum": 0
+    },
+    "limit": {
+      "title": "Result Limit",
+      "type": "integer",
+      "description": "Maximum number of results to return (0 = unlimited)",
+      "default": 100,
+      "minimum": 0
+    }
+  },
+  "required": []
+}

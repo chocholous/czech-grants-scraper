@@ -1,0 +1,80 @@
+{
+  "recordType": "grant",
+  "sourceId": "mz-grants",
+  "sourceName": "Ministerstvo zdravotnictví",
+  "sourceUrl": "https://mzd.gov.cz/vyzva-program-podpora-zdravi-zdravotni-pece-2026/",
+  "grantUrl": "https://mzd.gov.cz/vyzva-program-podpora-zdravi-zdravotni-pece-2026/",
+  "title": "Výzva k předkládání žádostí o přidělení finančních prostředků v rámci programu Podpora zdraví a zdravotní péče pro rok 2026",
+  "eligibility": [
+    "Není specifikováno"
+  ],
+  "fundingAmount": {
+    "min": 0,
+    "max": 0,
+    "currency": "CZK"
+  },
+  "deadline": "2025-09-30",
+  "status": "partial",
+  "statusNotes": "Missing fields: eligibility, fundingAmount",
+  "extractedAt": "2026-01-17T14:22:46.451472+00:00",
+  "contentHash": "b8a8fe887676d91ba285d2ce925e016e361fe3c7d7b3c02c72a7497ddab473bc",
+  "summary": "Ministerstvo zdravotnictví zveřejňuje Výzvu k předkládání žádostí o přidělení finančních prostředků v rámci dotačního programu Podpora zdraví a zdravotní péče pro rok 2026.",
+  "description": "Ministerstvo zdravotnictví zveřejňuje Výzvu k předkládání žádostí o přidělení finančních prostředků v rámci dotačního programu Podpora zdraví a zdravotní péče pro rok 2026. Možnost podávat žádosti o dotaci bude otevřena od 29. srpna do 30. září 2025 (včetně) způsobem uvedeným ve výzvě dotačního prog",
+  "contact_email": [
+    "grantys@nap.cz"
+  ],
+  "contact_phone": [],
+  "criteria": [],
+  "conditions": [],
+  "applicationWindow": {},
+  "regions": [],
+  "categories": [],
+  "attachments": [
+    {
+      "title": "Výzva programu (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/Vyzva-PZ-2026.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "Metodika programu (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/Metodika-PZ-2026.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "Grantys - manuál pro žadatele (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/Grantys-–-manual-pro-zadatele-MZCR.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "01-PZ_2026_Podrobny-rozpocet-materialu.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/01-PZ_2026_Podrobny-rozpocet-materialu.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "02-PZ_2026_Podrobny-rozpocet-sluzeb.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/02-PZ_2026_Podrobny-rozpocet-sluzeb.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "03-PZ_2026_Prehled-zamestnancu-projektu.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/03-PZ_2026_Prehled-zamestnancu-projektu.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "04-PZ_2026_Ostatni-osobni-vydaje.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/04-PZ_2026_Ostatni-osobni-vydaje.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "05-PZ_2026_Edicni-a-medialni-cinnost.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/05-PZ_2026_Edicni-a-medialni-cinnost.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "06-PZ_2026_Prednaskova-cinnost.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/06-PZ_2026_Prednaskova-cinnost.xlsx",
+      "type": "xlsx"
+    }
+  ],
+  "language": "cs"
+}

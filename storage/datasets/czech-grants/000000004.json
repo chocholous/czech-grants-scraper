@@ -1,0 +1,90 @@
+{
+  "recordType": "grant",
+  "sourceId": "mz-grants",
+  "sourceName": "Ministerstvo zdravotnictví",
+  "sourceUrl": "https://mzd.gov.cz/vyzva-narodni-program-reseni-problematiky-hiv-aids-2026/",
+  "grantUrl": "https://mzd.gov.cz/vyzva-narodni-program-reseni-problematiky-hiv-aids-2026/",
+  "title": "Výzva k předkládání žádostí o přidělení finančních prostředků v rámci dotačního programu Národní program řešení problematiky HIV/AIDS pro rok 2026",
+  "eligibility": [
+    "Není specifikováno"
+  ],
+  "fundingAmount": {
+    "min": 0,
+    "max": 0,
+    "currency": "CZK"
+  },
+  "deadline": "2025-09-30",
+  "status": "partial",
+  "statusNotes": "Missing fields: eligibility, fundingAmount",
+  "extractedAt": "2026-01-17T14:22:46.321723+00:00",
+  "contentHash": "1eb3a2a1fd561f545152b7bfdcf2289809c7b4e894010be4959138c3c5de6b58",
+  "summary": "Ministerstvo zdravotnictví zveřejňuje výzvu k předkládání žádostí o přidělení finančních prostředků v rámci dotačního programu Národní program řešení problematiky HIV/AIDS pro rok 2026.",
+  "description": "Ministerstvo zdravotnictví zveřejňuje výzvu k předkládání žádostí o přidělení finančních prostředků v rámci dotačního programu Národní program řešení problematiky HIV/AIDS pro rok 2026. Možnost podávat žádosti o dotaci bude otevřena od 29. srpna do 30. září 2025 (včetně) způsobem uvedeným ve výzvě d",
+  "contact_email": [
+    "podatelna@mzd.gov.cz"
+  ],
+  "contact_phone": [],
+  "criteria": [],
+  "conditions": [],
+  "applicationWindow": {},
+  "regions": [],
+  "categories": [],
+  "attachments": [
+    {
+      "title": "Výzva programu (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Vyzva.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "Metodika programu (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Metodika-k-podani-Zadosti-o-poskytnuti-dotace.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "Grantys - manuál pro žadatel (formát pdf)",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/Grantys-–-manual-pro-zadatele-MZCR.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "Doporuceny-postup_PrEP__PEP_1_10_2024.pdf",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/Doporuceny-postup_PrEP__PEP_1_10_2024.pdf",
+      "type": "pdf"
+    },
+    {
+      "title": "HIV_2026_Podrobny-rozpocet-materialu-zdravotni-a-ostatni.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Podrobny-rozpocet-materialu-zdravotni-a-ostatni.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "HIV_2026_Podrobny-rozpocet-sluzeb-mimo-cestovneho.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Podrobny-rozpocet-sluzeb-mimo-cestovneho.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "HIV_2026_Podrobny-prehled-zamestnancu.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Podrobny-prehled-zamestnancu.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "HIV_2026_Ostatni-osobni-vydaje-prehled-dohod.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Ostatni-osobni-vydaje-prehled-dohod.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "HIV_2026_Podrobny-rozpocet-cestovne.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Podrobny-rozpocet-cestovne.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "HIV_2026_Edicni-a-medialni-cinnost.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Edicni-a-medialni-cinnost.xlsx",
+      "type": "xlsx"
+    },
+    {
+      "title": "HIV_2026_Prednaskova-cinnost.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/08/HIV_2026_Prednaskova-cinnost.xlsx",
+      "type": "xlsx"
+    }
+  ],
+  "language": "cs"
+}

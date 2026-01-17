@@ -1,0 +1,19 @@
+{
+  "actorSpecification": 1,
+  "name": "mz-grants-scraper",
+  "title": "MZ Grants Scraper",
+  "version": "0.1.0",
+  "description": "Scrapes grants from Czech Ministry of Health (MZ)",
+  "build": {
+    "tag": "latest",
+    "baseDockerImage": "apify/actor-python:3.13",
+    "dockerfile": "./Dockerfile"
+  },
+  "usesStandbyMode": false,
+  "storages": {
+    "dataset": "./.actor/dataset_schema.json"
+  },
+  "meta": {
+    "generatedBy": "claude-sonnet-4-5-20250929"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "mode": "refresh",
+  "onlyActive": true,
+  "staleAfterDays": 7,
+  "limit": 10
+}

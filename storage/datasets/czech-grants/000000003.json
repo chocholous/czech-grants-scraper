@@ -1,0 +1,40 @@
+{
+  "recordType": "grant",
+  "sourceId": "mz-grants",
+  "sourceName": "Ministerstvo zdravotnictví",
+  "sourceUrl": "https://mzd.gov.cz/vysledky-dotacniho-rizeni-zarazeni-do-kategorie-postoupil-nepostoupil-pvp-2026/",
+  "grantUrl": "https://mzd.gov.cz/vysledky-dotacniho-rizeni-zarazeni-do-kategorie-postoupil-nepostoupil-pvp-2026/",
+  "title": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil",
+  "eligibility": [
+    "Není specifikováno"
+  ],
+  "fundingAmount": {
+    "min": 0,
+    "max": 0,
+    "currency": "CZK"
+  },
+  "deadline": null,
+  "status": "partial",
+  "statusNotes": "Missing fields: deadline",
+  "extractedAt": "2026-01-17T14:22:46.186184+00:00",
+  "contentHash": "444d528422f2bdf2536727be44a7ed2024a30fe92dc7b97323ca5fec7187cfe5",
+  "summary": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil",
+  "description": "Výsledky dotačního řízení – zařazení do kategorie postoupil/nepostoupil",
+  "contact_email": [
+    "podatelna@mzd.gov.cz"
+  ],
+  "contact_phone": [],
+  "criteria": [],
+  "conditions": [],
+  "applicationWindow": {},
+  "regions": [],
+  "categories": [],
+  "attachments": [
+    {
+      "title": "PVP-2026-tabulka-projektu.xlsx",
+      "url": "https://mzd.gov.cz/wp-content/uploads/2025/12/PVP-2026-tabulka-projektu.xlsx",
+      "type": "xlsx"
+    }
+  ],
+  "language": "cs"
+}
