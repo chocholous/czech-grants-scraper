@@ -21,7 +21,8 @@ from .utils import download_document
 class TACRCzScraper(AbstractGrantSubScraper):
     """Scraper for tacr.cz grant and public call pages"""
 
-    DOMAIN = "tacr.cz"
+    # tacr.cz redirects to tacr.gov.cz - support both
+    DOMAINS = ["tacr.cz", "tacr.gov.cz"]
 
     MAIN_SELECTORS = [
         "main",
@@ -51,9 +52,9 @@ class TACRCzScraper(AbstractGrantSubScraper):
     }
 
     def can_handle(self, url: str) -> bool:
-        """Check if URL is from tacr.cz domain"""
+        """Check if URL is from tacr.cz or tacr.gov.cz domain"""
         parsed = urlparse(url)
-        return self.DOMAIN in parsed.netloc
+        return any(domain in parsed.netloc for domain in self.DOMAINS)
 
     async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
         """Extract grant content from tacr.cz page"""
@@ -68,7 +69,7 @@ class TACRCzScraper(AbstractGrantSubScraper):
             summary = self._extract_summary(container)
             documents = self._extract_documents(soup, url)
             funding_amounts = self._extract_funding_amounts(container.get_text(" ", strip=True))
-            application_url = self._extract_application_url(soup)
+            application_url = self._extract_application_url(soup, url)
             contact_email = self._extract_contact_email(soup)
             eligible_recipients = self._extract_eligible_recipients(soup)
 
@@ -179,7 +180,7 @@ class TACRCzScraper(AbstractGrantSubScraper):
             "currency": "CZK",
         }
 
-    def _extract_application_url(self, soup: BeautifulSoup) -> Optional[str]:
+    def _extract_application_url(self, soup: BeautifulSoup, base_url: str = None) -> Optional[str]:
         keywords = ["aplikace", "podat", "podani", "formular", "submission", "zadost", "ista"]
         for link in soup.find_all("a", href=True):
             text = link.get_text(" ", strip=True).lower()
@@ -187,7 +188,9 @@ class TACRCzScraper(AbstractGrantSubScraper):
             if any(keyword in text for keyword in keywords) or any(
                 keyword in href for keyword in keywords
             ):
-                return urljoin(f"https://{self.DOMAIN}", link["href"])
+                # Use the base URL if provided, otherwise default to tacr.gov.cz
+                base = base_url or "https://tacr.gov.cz"
+                return urljoin(base, link["href"])
         return None
 
     def _extract_contact_email(self, soup: BeautifulSoup) -> Optional[str]:

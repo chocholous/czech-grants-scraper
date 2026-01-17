@@ -109,37 +109,66 @@ class SFZPCzScraper(AbstractGrantSubScraper):
         return None
 
     def _extract_documents(self, soup: BeautifulSoup, base_url: str) -> List[Document]:
-        """Extract documents from dual-link pattern"""
+        """Extract documents from page - handles multiple patterns"""
         documents = []
-        
-        # Find "Dokumenty ke stažení" section
-        for h2 in soup.find_all('h2'):
-            if 'dokumenty' in h2.get_text().lower():
-                # Find all download links in following siblings
-                sibling = h2.find_next_sibling()
-                while sibling and sibling.name != 'h2':
-                    # Look for direct download links
-                    for link in sibling.find_all('a', href=True):
-                        href = link['href']
-                        if '/files/documents/' in href or any(ext in href.lower() for ext in ['.pdf', '.xlsx', '.docx', '.zip']):
-                            title = link.get_text(strip=True) or 'Document'
-                            # Skip "stáhnout" links, use title
-                            if title.lower() != 'stáhnout':
-                                doc_url = urljoin(self.BASE_URL, href)
-                                file_format = href.split('.')[-1].lower()
-                                doc_type = self._classify_document(title)
-                                
-                                doc = Document(
-                                    title=title,
-                                    url=doc_url,
-                                    doc_type=doc_type,
-                                    file_format=file_format,
-                                )
-                                documents.append(doc)
-                    sibling = sibling.find_next_sibling()
-                break
-        
+        seen_urls = set()
+
+        # Pattern 1: Look for direct document links anywhere on the page
+        # SFZP uses /files/documents/ pattern for downloads
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+
+            # Check for document file patterns
+            is_document = (
+                '/files/documents/' in href or
+                any(ext in href.lower() for ext in ['.pdf', '.xlsx', '.docx', '.zip', '.xls', '.doc'])
+            )
+
+            if not is_document:
+                continue
+
+            doc_url = urljoin(base_url, href)
+
+            # Skip duplicates
+            if doc_url in seen_urls:
+                continue
+            seen_urls.add(doc_url)
+
+            title = link.get_text(strip=True) or 'Document'
+            # Skip generic download links like "stáhnout" - try to get title from parent
+            if title.lower() in ['stáhnout', 'download', 'ke stažení']:
+                parent = link.find_parent(['li', 'p', 'div'])
+                if parent:
+                    # Try to find a better title from parent text
+                    parent_text = parent.get_text(strip=True)
+                    # Remove the download text
+                    for skip in ['stáhnout', 'download', 'ke stažení']:
+                        parent_text = parent_text.replace(skip, '').strip()
+                    if parent_text:
+                        title = parent_text[:100]  # Limit length
+
+            # Get file format from URL
+            file_format = self._get_file_format(href)
+            doc_type = self._classify_document(title)
+
+            doc = Document(
+                title=title,
+                url=doc_url,
+                doc_type=doc_type,
+                file_format=file_format,
+            )
+            documents.append(doc)
+
         return documents
+
+    def _get_file_format(self, url: str) -> str:
+        """Extract file format from URL"""
+        # Handle /files/documents/storage/... pattern
+        url_lower = url.lower()
+        for ext in ['pdf', 'xlsx', 'xls', 'docx', 'doc', 'zip']:
+            if f'.{ext}' in url_lower:
+                return ext
+        return 'unknown'
 
     def _classify_document(self, title: str) -> str:
         """Classify document by title"""
