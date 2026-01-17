@@ -152,7 +152,7 @@ async def run_actor():
         Actor.log.info("Running scrapers to refresh data...")
         try:
             # Import scraper components (deferred to avoid import issues when not refreshing)
-            from dotaceeu import DotaceuCrawler, load_config
+            from dotaceeu import DotaceuCrawler, load_config, setup_logging
 
             # Change to scrapers directory for relative paths in config
             original_cwd = os.getcwd()
@@ -162,9 +162,14 @@ async def run_actor():
                 # Load scraper config
                 config = load_config("config.yml")
 
+                # Configure logging so scraper progress is visible
+                setup_logging(config)
+
                 # Get scraper options from input
                 max_grants = input_data.get("maxGrants")  # Optional limit for testing
                 deep_scrape = input_data.get("deepScrape", False)
+
+                Actor.log.info(f"Starting dotaceeu.cz scraper (max_grants={max_grants}, deep_scrape={deep_scrape})")
 
                 # Run the crawler
                 crawler = DotaceuCrawler(config, deep_scrape=deep_scrape)
@@ -214,8 +219,6 @@ async def run_actor():
             limit=limit,
         )
         Actor.log.info(f"Search results: {len(results)} items")
-
-    await Actor.set_value("OUTPUT", {"count": len(results), "items": results})
 
     if readiness_server:
         readiness_server.shutdown()
