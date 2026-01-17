@@ -1,0 +1,23 @@
+{
+  "actorSpecification": 1,
+  "name": "czech-grants-scraper",
+  "title": "Czech Grants Scraper",
+  "description": "Scraper for Czech grants, EU funds, and funding opportunities from multiple sources including dotaceeu.cz and operational program websites",
+  "version": "1.0",
+  "build": {
+    "tag": "latest",
+    "baseDockerImage": "apify/actor-python-playwright:3.12",
+    "dockerfile": "./Dockerfile"
+  },
+  "meta": {
+    "templateId": "python-start",
+    "generatedBy": "claude-sonnet-4"
+  },
+  "readme": "./README.md",
+  "input": "./input_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  },
+  "environmentVariables": {},
+  "usesStandbyMode": false
+}

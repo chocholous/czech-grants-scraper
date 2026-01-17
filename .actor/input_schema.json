@@ -1,0 +1,86 @@
+{
+  "title": "Czech Grants Scraper Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "scrapeMode": {
+      "title": "Scraping Mode",
+      "type": "string",
+      "description": "Choose scraping depth: basic (dotaceeu.cz only) or deep (follow external links and download documents)",
+      "default": "basic",
+      "enum": ["basic", "deep"],
+      "enumTitles": ["Basic (dotaceeu.cz)", "Deep (with document extraction)"],
+      "editor": "select"
+    },
+    "maxGrants": {
+      "title": "Maximum Grants to Process",
+      "type": "integer",
+      "description": "Limit number of grants to process (0 = unlimited, useful for testing)",
+      "default": 0,
+      "minimum": 0
+    },
+    "ngoOnly": {
+      "title": "NGO-Eligible Only",
+      "type": "boolean",
+      "description": "Filter only grants eligible for NGOs (neziskové organizace, spolky, nadace)",
+      "default": false
+    },
+    "sources": {
+      "title": "Grant Sources",
+      "type": "array",
+      "description": "Select which operational program sources to scrape (empty = all)",
+      "editor": "select",
+      "default": [],
+      "prefill": [],
+      "items": {
+        "type": "string",
+        "enum": [
+          "dotaceeu.cz",
+          "opst.cz",
+          "mv.gov.cz",
+          "opzp.cz",
+          "nrb.cz",
+          "esfcr.cz",
+          "optak.gov.cz",
+          "sfzp.cz",
+          "irop.mmr.cz"
+        ]
+      }
+    },
+    "delays": {
+      "title": "Request Delays (ms)",
+      "type": "object",
+      "description": "Politeness delays between requests",
+      "editor": "json",
+      "default": {
+        "pageNavigation": 3000,
+        "loadMoreClick": 2000,
+        "betweenItems": 500
+      },
+      "prefill": {
+        "pageNavigation": 3000,
+        "loadMoreClick": 2000,
+        "betweenItems": 500
+      }
+    },
+    "ngoKeywords": {
+      "title": "NGO Keywords",
+      "type": "array",
+      "description": "Keywords to identify NGO-eligible grants (Czech terms)",
+      "editor": "stringList",
+      "default": [
+        "neziskov",
+        "spolek",
+        "nadace",
+        "nadační fond",
+        "obecně prospěšn",
+        "NNO",
+        "církevní"
+      ],
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": []
+}

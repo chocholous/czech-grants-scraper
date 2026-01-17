@@ -1,0 +1,118 @@
+{
+  "actorSpecification": 1,
+  "fields": {},
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "external_id",
+          "title",
+          "source_url",
+          "operational_programme",
+          "call_status",
+          "submission_deadline",
+          "application_start",
+          "is_ngo_eligible",
+          "total_allocation",
+          "call_number",
+          "programming_period",
+          "priority_axis",
+          "call_type",
+          "eligible_applicants",
+          "application_availability",
+          "min_amount",
+          "max_amount",
+          "application_link",
+          "page_type",
+          "scraped_at"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "external_id": {
+            "label": "ID",
+            "format": "text"
+          },
+          "title": {
+            "label": "Název",
+            "format": "text"
+          },
+          "source_url": {
+            "label": "URL",
+            "format": "link"
+          },
+          "operational_programme": {
+            "label": "Operační program",
+            "format": "text"
+          },
+          "call_status": {
+            "label": "Stav",
+            "format": "text"
+          },
+          "submission_deadline": {
+            "label": "Uzávěrka",
+            "format": "date"
+          },
+          "application_start": {
+            "label": "Zahájení",
+            "format": "date"
+          },
+          "is_ngo_eligible": {
+            "label": "NGO způsobilé",
+            "format": "boolean"
+          },
+          "total_allocation": {
+            "label": "Alokace (CZK)",
+            "format": "number"
+          },
+          "call_number": {
+            "label": "Číslo výzvy",
+            "format": "text"
+          },
+          "programming_period": {
+            "label": "Programové období",
+            "format": "text"
+          },
+          "priority_axis": {
+            "label": "Prioritní osa",
+            "format": "text"
+          },
+          "call_type": {
+            "label": "Druh výzvy",
+            "format": "text"
+          },
+          "eligible_applicants": {
+            "label": "Oprávnění žadatelé",
+            "format": "text"
+          },
+          "application_availability": {
+            "label": "Zpřístupnění žádosti",
+            "format": "date"
+          },
+          "min_amount": {
+            "label": "Min částka",
+            "format": "number"
+          },
+          "max_amount": {
+            "label": "Max částka",
+            "format": "number"
+          },
+          "application_link": {
+            "label": "Více informací",
+            "format": "link"
+          },
+          "page_type": {
+            "label": "Typ stránky",
+            "format": "text"
+          },
+          "scraped_at": {
+            "label": "Scraped At",
+            "format": "date"
+          }
+        }
+      }
+    }
+  }
+}

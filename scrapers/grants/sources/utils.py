@@ -4,12 +4,23 @@ Document conversion utilities for grant sub-scrapers.
 Converts PDF, XLSX, DOCX files to markdown format for LLM consumption.
 """
 
-import logging
 from pathlib import Path
 from typing import Optional, Dict
 import re
 
-# Document download
+try:
+    from apify import Actor
+    ACTOR_AVAILABLE = True
+except ImportError:
+    ACTOR_AVAILABLE = False
+    import logging
+
+# Document download (using httpx for async support)
+try:
+    import httpx
+    HTTPX_AVAILABLE = True
+except ImportError:
+    HTTPX_AVAILABLE = False
 import requests
 
 # PDF conversion
@@ -29,7 +40,8 @@ DOWNLOAD_CHUNK_SIZE_BYTES = 8192  # Standard chunk size for streaming downloads
 DEFAULT_DOWNLOAD_TIMEOUT_SECONDS = 30  # Reasonable timeout for document downloads
 
 
-logger = logging.getLogger(__name__)
+if not ACTOR_AVAILABLE:
+    logger = logging.getLogger(__name__)
 
 
 def download_document(url: str, save_path: str, timeout: int = DEFAULT_DOWNLOAD_TIMEOUT_SECONDS) -> bool:
@@ -48,19 +60,35 @@ def download_document(url: str, save_path: str, timeout: int = DEFAULT_DOWNLOAD_
         save_path_obj = Path(save_path)
         save_path_obj.parent.mkdir(parents=True, exist_ok=True)
 
-        response = requests.get(url, timeout=timeout, stream=True)
-        response.raise_for_status()
+        if HTTPX_AVAILABLE:
+            # Use httpx for better async compatibility
+            with httpx.Client(timeout=timeout) as client:
+                response = client.get(url)
+                response.raise_for_status()
+                
+                with open(save_path, 'wb') as f:
+                    f.write(response.content)
+        else:
+            # Fallback to requests
+            response = requests.get(url, timeout=timeout, stream=True)
+            response.raise_for_status()
 
         with open(save_path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=DOWNLOAD_CHUNK_SIZE_BYTES):
                 if chunk:
                     f.write(chunk)
 
-        logger.info(f"Downloaded: {url} → {save_path}")
+        if ACTOR_AVAILABLE:
+            Actor.log.info(f"Downloaded: {url} → {save_path}")
+        else:
+            logger.info(f"Downloaded: {url} → {save_path}")
         return True
 
     except Exception as e:
-        logger.error(f"Failed to download {url}: {e}")
+        if ACTOR_AVAILABLE:
+            Actor.log.error(f"Failed to download {url}: {e}")
+        else:
+            logger.error(f"Failed to download {url}: {e}")
         return False
 
 
@@ -94,11 +122,17 @@ def convert_pdf_to_markdown(pdf_path: str) -> Optional[str]:
                         markdown_parts.append(f"### Table {table_num}\n\n{markdown_table}\n")
 
         result = "\n".join(markdown_parts)
-        logger.info(f"Converted PDF to markdown: {pdf_path} ({len(result)} chars)")
+        if ACTOR_AVAILABLE:
+            Actor.log.info(f"Converted PDF to markdown: {pdf_path} ({len(result)} chars)")
+        else:
+            logger.info(f"Converted PDF to markdown: {pdf_path} ({len(result)} chars)")
         return result
 
     except Exception as e:
-        logger.error(f"Failed to convert PDF {pdf_path}: {e}")
+        if ACTOR_AVAILABLE:
+            Actor.log.error(f"Failed to convert PDF {pdf_path}: {e}")
+        else:
+            logger.error(f"Failed to convert PDF {pdf_path}: {e}")
         return None
 
 
@@ -141,14 +175,23 @@ def convert_xlsx_to_markdown(xlsx_path: str) -> Optional[str]:
                 for cell_ref, formula in formulas.items():
                     markdown_parts.append(f"- `{cell_ref}`: `{formula}`")
         except Exception as e:
-            logger.debug(f"Could not extract formulas from {xlsx_path}: {e}")
+            if ACTOR_AVAILABLE:
+                Actor.log.debug(f"Could not extract formulas from {xlsx_path}: {e}")
+            else:
+                logger.debug(f"Could not extract formulas from {xlsx_path}: {e}")
 
         result = "\n".join(markdown_parts)
-        logger.info(f"Converted XLSX to markdown: {xlsx_path} ({len(result)} chars)")
+        if ACTOR_AVAILABLE:
+            Actor.log.info(f"Converted XLSX to markdown: {xlsx_path} ({len(result)} chars)")
+        else:
+            logger.info(f"Converted XLSX to markdown: {xlsx_path} ({len(result)} chars)")
         return result
 
     except Exception as e:
-        logger.error(f"Failed to convert XLSX {xlsx_path}: {e}")
+        if ACTOR_AVAILABLE:
+            Actor.log.error(f"Failed to convert XLSX {xlsx_path}: {e}")
+        else:
+            logger.error(f"Failed to convert XLSX {xlsx_path}: {e}")
         return None
 
 
@@ -174,11 +217,17 @@ def convert_docx_to_markdown(docx_path: str) -> Optional[str]:
         # Clean up excessive newlines
         markdown = re.sub(r'\n{3,}', '\n\n', markdown)
 
-        logger.info(f"Converted DOCX to markdown: {docx_path} ({len(markdown)} chars)")
+        if ACTOR_AVAILABLE:
+            Actor.log.info(f"Converted DOCX to markdown: {docx_path} ({len(markdown)} chars)")
+        else:
+            logger.info(f"Converted DOCX to markdown: {docx_path} ({len(markdown)} chars)")
         return markdown
 
     except Exception as e:
-        logger.error(f"Failed to convert DOCX {docx_path}: {e}")
+        if ACTOR_AVAILABLE:
+            Actor.log.error(f"Failed to convert DOCX {docx_path}: {e}")
+        else:
+            logger.error(f"Failed to convert DOCX {docx_path}: {e}")
         return None
 
 
@@ -204,7 +253,10 @@ def convert_document_to_markdown(file_path: str) -> Optional[str]:
 
     converter = converters.get(suffix)
     if not converter:
-        logger.warning(f"Unsupported file format: {suffix}")
+        if ACTOR_AVAILABLE:
+            Actor.log.warning(f"Unsupported file format: {suffix}")
+        else:
+            logger.warning(f"Unsupported file format: {suffix}")
         return None
 
     return converter(str(file_path))

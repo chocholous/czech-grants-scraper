@@ -5,12 +5,24 @@ Extracts grant calls from Liferay portal-based employment programme website.
 """
 
 import re
-import logging
 from typing import Optional, List, Dict
 from datetime import datetime, timezone
 from urllib.parse import urljoin, urlparse
 
+try:
+    from apify import Actor
+    ACTOR_AVAILABLE = True
+except ImportError:
+    ACTOR_AVAILABLE = False
+    import logging
+
+try:
+    import httpx
+    HTTPX_AVAILABLE = True
+except ImportError:
+    HTTPX_AVAILABLE = False
 import requests
+
 from bs4 import BeautifulSoup
 
 from .base import AbstractGrantSubScraper
@@ -32,7 +44,10 @@ class ESFCRCzScraper(AbstractGrantSubScraper):
     }
 
     def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        if ACTOR_AVAILABLE:
+            self.logger = Actor.log
+        else:
+            self.logger = logging.getLogger(self.__class__.__name__)
 
     def can_handle(self, url: str) -> bool:
         """Check if URL is from esfcr.cz domain"""
@@ -42,10 +57,18 @@ class ESFCRCzScraper(AbstractGrantSubScraper):
     async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
         """Extract content from esfcr.cz grant page"""
         try:
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            response.encoding = 'utf-8'
-            soup = BeautifulSoup(response.content, 'html.parser')
+            if HTTPX_AVAILABLE:
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(url, timeout=10)
+                    response.raise_for_status()
+                    html_content = response.text
+            else:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                response.encoding = 'utf-8'
+                html_content = response.text
+            
+            soup = BeautifulSoup(html_content, 'html.parser')
 
             # Extract metadata from Czech text patterns
             metadata = self._extract_metadata(soup)

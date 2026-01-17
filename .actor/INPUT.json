@@ -1,0 +1,20 @@
+{
+  "scrapeMode": "basic",
+  "maxGrants": 10,
+  "ngoOnly": false,
+  "sources": [],
+  "delays": {
+    "pageNavigation": 1500,
+    "loadMoreClick": 500,
+    "betweenItems": 200
+  },
+  "ngoKeywords": [
+    "neziskov",
+    "spolek",
+    "nadace",
+    "nadační fond",
+    "obecně prospěšn",
+    "NNO",
+    "církevní"
+  ]
+}

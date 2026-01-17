@@ -7,7 +7,14 @@ scraper implementation that inherits from this base class.
 
 from abc import ABC, abstractmethod
 from typing import Optional
+
+try:
+    from apify import Actor
+    ACTOR_AVAILABLE = True
+except ImportError:
+    ACTOR_AVAILABLE = False
 import logging
+
 from .models import GrantContent
 
 
@@ -15,7 +22,10 @@ class AbstractGrantSubScraper(ABC):
     """Base class for site-specific grant content extraction"""
 
     def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        if ACTOR_AVAILABLE:
+            self.logger = Actor.log
+        else:
+            self.logger = logging.getLogger(self.__class__.__name__)
 
     @abstractmethod
     def can_handle(self, url: str) -> bool:
