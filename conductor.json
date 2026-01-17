@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "setup": "uv sync && [ -f \"$CONDUCTOR_ROOT_DIR/.env\" ] && ln -sf \"$CONDUCTOR_ROOT_DIR/.env\" .env || true",
+        "run": "apify run"
+    }
+}
