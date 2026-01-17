@@ -1,0 +1,36 @@
+scraper:
+  base_url: "${DOTACEEU_BASE_URL:-https://www.dotaceeu.cz}"
+  listing_path: "/cs/jak-ziskat-dotaci/vyzvy"
+
+delays:  # Politeness delays in milliseconds
+  page_navigation: "${PAGE_DELAY:-3000}"       # ms between page loads
+  load_more_click: "${LOAD_MORE_DELAY:-2000}"  # ms after pagination click
+  between_items: "${ITEM_DELAY:-500}"          # ms between detail scrapes
+
+selectors:  # Extract from config to avoid hardcoding
+  ajax_item: ".js-ajax-item"
+  load_more_button: ".js-more-vyzvy"
+  grant_title: "h3, .title"
+  grant_link: "a"
+
+output:
+  format: "both"  # json | csv | both
+  path: "${OUTPUT_PATH:-./data/output}"
+
+resume:
+  enabled: true
+  state_file: "./data/state/scraper_state.json"
+
+filters:
+  ngo_keywords:
+    - "neziskov"
+    - "spolek"
+    - "nadace"
+    - "nadační fond"
+    - "obecně prospěšn"
+    - "NNO"
+    - "církevní"
+
+logging:
+  level: "${LOG_LEVEL:-INFO}"
+  file: "./logs/scraper.log"

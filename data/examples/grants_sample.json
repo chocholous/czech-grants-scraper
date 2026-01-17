@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Modernizace komunitních zdrojů energie",
+    "source": "https://opst.cz",
+    "source_name": "OP Spravedlivá transformace",
+    "amount_min": 500000,
+    "amount_max": 10000000,
+    "currency": "CZK",
+    "deadline": "2025-06-30",
+    "description": "Podpora modernizace a rozvoje komunitních zdrojů energie v uhelných regionech.",
+    "url": "https://opst.cz/vyzvy/123",
+    "eligibility": ["obce", "MSP", "velké podniky"],
+    "regions": ["Moravskoslezský", "Ústecký", "Karlovarský"],
+    "categories": ["energie", "modernizace", "komunity"],
+    "scraped_at": "2025-01-17T10:00:00Z"
+  },
+  {
+    "title": "Inovační vouchery pro MSP",
+    "source": "https://optak.gov.cz",
+    "source_name": "OP TAK",
+    "amount_min": 50000,
+    "amount_max": 500000,
+    "currency": "CZK",
+    "deadline": "2025-04-15",
+    "description": "Podpora spolupráce MSP s výzkumnými organizacemi.",
+    "url": "https://optak.gov.cz/vyzvy/456",
+    "eligibility": ["MSP"],
+    "regions": ["celá ČR mimo Prahu"],
+    "categories": ["inovace", "výzkum", "spolupráce"],
+    "scraped_at": "2025-01-17T10:00:00Z"
+  }
+]

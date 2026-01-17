@@ -1,0 +1,1 @@
+"""Scrapery pro charitativní organizace."""
