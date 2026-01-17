@@ -2,7 +2,7 @@
   "actorSpecification": 1,
   "name": "czech-grants-scraper",
   "title": "Czech Grants Scraper",
-  "version": "0.1",
+  "version": "0.2",
   "dockerfile": "./Dockerfile",
   "usesStandbyMode": true,
   "meta": {

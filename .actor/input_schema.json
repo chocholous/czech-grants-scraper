@@ -8,6 +8,7 @@
             "title": "Mode",
             "type": "string",
             "description": "Operation mode: 'refresh' to scrape new data, 'search' to query existing data, 'auto' for both",
+            "editor": "select",
             "default": "refresh",
             "enum": ["refresh", "search", "auto"],
             "enumTitles": ["Refresh", "Search", "Auto"]
@@ -16,24 +17,28 @@
             "title": "Max Grants",
             "type": "integer",
             "description": "Maximum number of grants to scrape (for testing). Leave empty for all grants.",
+            "editor": "number",
             "minimum": 1
         },
         "deepScrape": {
             "title": "Deep Scrape",
             "type": "boolean",
             "description": "Enable deep scraping to follow links and extract detailed content from source websites",
+            "editor": "checkbox",
             "default": false
         },
         "enableLlm": {
             "title": "Enable LLM Enrichment",
             "type": "boolean",
             "description": "Use LLM to extract detailed eligibility criteria, evaluation criteria, and thematic keywords from grant pages. Requires APIFY_TOKEN for OpenRouter access. Increases scraping time and cost.",
+            "editor": "checkbox",
             "default": false
         },
         "llmModel": {
             "title": "LLM Model",
             "type": "string",
             "description": "OpenRouter model for LLM extraction. Claude Sonnet 4.5 offers best accuracy for Czech legal text. Use Haiku 4.5 for faster/cheaper extraction with good quality.",
+            "editor": "select",
             "default": "anthropic/claude-haiku-4.5",
             "enum": [
                 "anthropic/claude-sonnet-4.5",
@@ -54,6 +59,7 @@
             "title": "Test URLs",
             "type": "array",
             "description": "List of specific grant page URLs to test sub-scrapers directly (bypasses main scraper)",
+            "editor": "stringList",
             "items": {
                 "type": "string"
             }
@@ -61,12 +67,14 @@
         "query": {
             "title": "Search Query",
             "type": "string",
-            "description": "Text to search for in grant titles, summaries, and descriptions"
+            "description": "Text to search for in grant titles, summaries, and descriptions",
+            "editor": "textfield"
         },
         "categories": {
             "title": "Categories",
             "type": "array",
             "description": "Filter by grant categories",
+            "editor": "stringList",
             "items": {
                 "type": "string"
             }
@@ -75,6 +83,7 @@
             "title": "Regions",
             "type": "array",
             "description": "Filter by regions",
+            "editor": "stringList",
             "items": {
                 "type": "string"
             }
@@ -83,6 +92,7 @@
             "title": "Eligibility",
             "type": "array",
             "description": "Filter by eligible applicant types",
+            "editor": "stringList",
             "items": {
                 "type": "string"
             }
@@ -91,14 +101,19 @@
             "title": "Funding Range",
             "type": "object",
             "description": "Filter by funding amount range",
+            "editor": "json",
             "properties": {
                 "min": {
+                    "title": "Minimum",
                     "type": "integer",
-                    "description": "Minimum funding amount"
+                    "description": "Minimum funding amount",
+                    "editor": "number"
                 },
                 "max": {
+                    "title": "Maximum",
                     "type": "integer",
-                    "description": "Maximum funding amount"
+                    "description": "Maximum funding amount",
+                    "editor": "number"
                 }
             }
         },
@@ -106,14 +121,19 @@
             "title": "Deadline Range",
             "type": "object",
             "description": "Filter by application deadline range",
+            "editor": "json",
             "properties": {
                 "from": {
+                    "title": "From",
                     "type": "string",
-                    "description": "Start date (YYYY-MM-DD)"
+                    "description": "Start date (YYYY-MM-DD)",
+                    "editor": "textfield"
                 },
                 "to": {
+                    "title": "To",
                     "type": "string",
-                    "description": "End date (YYYY-MM-DD)"
+                    "description": "End date (YYYY-MM-DD)",
+                    "editor": "textfield"
                 }
             }
         },
@@ -121,12 +141,14 @@
             "title": "Only Active",
             "type": "boolean",
             "description": "Only return active grants",
+            "editor": "checkbox",
             "default": true
         },
         "limit": {
             "title": "Result Limit",
             "type": "integer",
             "description": "Maximum number of results to return",
+            "editor": "number",
             "default": 100,
             "minimum": 1,
             "maximum": 1000
