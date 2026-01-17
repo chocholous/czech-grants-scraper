@@ -85,7 +85,16 @@ async def run_actor():
     readiness_server = None
 
     async with Actor:
-        # Start readiness server for standby mode
+        # Detect standby mode and start web UI
+        if os.getenv('APIFY_META_ORIGIN') == 'STANDBY':
+            Actor.log.info("Standby mode detected, starting web UI")
+            from .web_ui import start_web_server
+
+            # Start web UI and wait indefinitely
+            await start_web_server()
+            return  # Never return to normal logic
+
+        # Start readiness server for normal mode
         readiness_server = start_readiness_server()
 
         # Get actor input

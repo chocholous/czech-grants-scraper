@@ -1,0 +1,178 @@
+/* Apify Brand Colors - Simplified */
+:root {
+    --apify-blue: #1672eb;
+    --apify-blue-dark: #1a57da;
+    --text-dark: #1f2123;
+    --text-secondary: #6c757d;
+    --success-green: #008a27;
+    --warning-orange: #ff9800;
+    --error-red: #dc3545;
+}
+
+/* Body - Simple gradient background */
+body {
+    background: linear-gradient(135deg, #1672eb 0%, #5290f9 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text-dark);
+}
+
+/* Navbar - Simple style */
+.navbar {
+    background: white !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    color: var(--apify-blue) !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Cards - Simple white cards */
+.card {
+    background: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Stats cards */
+.stats-card {
+    transition: transform 0.2s;
+}
+
+.stats-card:hover {
+    transform: translateY(-4px);
+}
+
+.stats-icon {
+    font-size: 2rem;
+    color: var(--apify-blue);
+}
+
+/* Table */
+.table-responsive {
+    background: white;
+    border-radius: 8px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: #f8f9fa;
+    color: var(--text-dark);
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--apify-blue);
+    border-color: var(--apify-blue);
+}
+
+.btn-primary:hover {
+    background-color: var(--apify-blue-dark);
+    border-color: var(--apify-blue-dark);
+}
+
+.btn-outline-primary {
+    color: var(--apify-blue);
+    border-color: var(--apify-blue);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--apify-blue);
+    border-color: var(--apify-blue);
+    color: white;
+}
+
+/* Badges */
+.badge {
+    padding: 0.35em 0.65em;
+    font-weight: 500;
+}
+
+/* Modal - SIMPLE CLEAN STYLE */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background: white;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1.5rem;
+}
+
+.modal-title {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.modal-body {
+    background: white;
+    padding: 1.5rem;
+}
+
+.modal-body h6 {
+    color: var(--apify-blue);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.modal-body p,
+.modal-body li {
+    color: var(--text-dark);
+}
+
+.modal-footer {
+    background: white;
+    border-top: 1px solid #dee2e6;
+    padding: 1.5rem;
+}
+
+/* Form controls */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--apify-blue);
+    box-shadow: 0 0 0 0.2rem rgba(22, 114, 235, 0.25);
+}
+
+/* Footer */
+footer {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 0;
+    margin-top: 3rem;
+}
+
+footer p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+/* Utility classes */
+.text-primary {
+    color: var(--apify-blue) !important;
+}
+
+.bg-primary {
+    background-color: var(--apify-blue) !important;
+}

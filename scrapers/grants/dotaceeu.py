@@ -29,17 +29,43 @@ from dateutil import parser as date_parser
 
 # Sub-scraper imports
 from subscrapers import SubScraperRegistry, GrantContent, Document
+
+# Operační programy (OP)
 from subscrapers.opst_cz import OPSTCzScraper
-from subscrapers.mv_gov_cz import MVGovCzScraper
 from subscrapers.nrb_cz import NRBCzScraper
 from subscrapers.irop_mmr_cz import IROPGovCzScraper
 from subscrapers.esfcr_cz import ESFCRCzScraper
 from subscrapers.opzp_cz import OPZPCzScraper
 from subscrapers.optak_gov_cz import OPTAKGovCzScraper
+from subscrapers.opjak_cz import OPJAKCzScraper
 from subscrapers.sfzp_cz import SFZPCzScraper
+
+# Grantové agentury
 from subscrapers.gacr_cz import GACRCzScraper
 from subscrapers.tacr_cz import TACRCzScraper
 from subscrapers.azvcr_cz import AZVCRCzScraper
+
+# Ministerstva
+from subscrapers.mv_gov_cz import MVGovCzScraper
+from subscrapers.mz_gov_cz import MZGovCzScraper
+from subscrapers.mze_szif_cz import MZeSZIFCzScraper
+from subscrapers.mzd_gov_cz import MzdGovCz2026Scraper
+from subscrapers.mzcr_cz import MZCRCzScraper
+from subscrapers.mze_cz import MZeCzScraper
+from subscrapers.mzv_cz import MZVCzScraper
+from subscrapers.mfcr_cz import MFCRCzScraper
+from subscrapers.mkcr_cz import MKCRCzScraper
+from subscrapers.mpo_cz import MPOCzScraper
+from subscrapers.msmt_cz import MSMTCzScraper
+from subscrapers.mdcr_cz import MDCRCzScraper
+from subscrapers.justice_cz import JusticeCzScraper
+
+# Ostatní státní instituce
+from subscrapers.vlada_cz import VladaCzScraper
+from subscrapers.nsa_gov_cz import NSAGovCzScraper
+from subscrapers.army_cz import ArmyCzScraper
+from subscrapers.eeagrants_cz import EEAGrantsCzScraper
+
 from subscrapers.utils import download_document, convert_document_to_markdown
 
 
@@ -543,17 +569,43 @@ class DotaceuCrawler:
         if deep_scrape:
             self.scraper_registry = SubScraperRegistry()
             # Register available sub-scrapers with LLM settings
+
+            # Operační programy (OP)
             self.scraper_registry.register(OPSTCzScraper(enable_llm=enable_llm, llm_model=llm_model))
-            self.scraper_registry.register(MVGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.scraper_registry.register(NRBCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.scraper_registry.register(IROPGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.scraper_registry.register(ESFCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.scraper_registry.register(OPZPCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.scraper_registry.register(OPTAKGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(OPJAKCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.scraper_registry.register(SFZPCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+
+            # Grantové agentury
             self.scraper_registry.register(GACRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.scraper_registry.register(TACRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.scraper_registry.register(AZVCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+
+            # Ministerstva
+            self.scraper_registry.register(MVGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MZGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MZeSZIFCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MzdGovCz2026Scraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MZCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MZeCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MZVCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MFCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MKCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MPOCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MSMTCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MDCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(JusticeCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+
+            # Ostatní státní instituce
+            self.scraper_registry.register(VladaCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(NSAGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(ArmyCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(EEAGrantsCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+
             self.logger.info(f"Deep scraping enabled. Registered {self.scraper_registry.count()} sub-scrapers: {self.scraper_registry.list_scrapers()}")
             if enable_llm:
                 self.logger.info(f"LLM enrichment enabled with model: {llm_model}")
@@ -1093,6 +1145,13 @@ class StateManager:
 
 def main():
     """Main entry point"""
+    # Check if running in Standby mode (Web UI)
+    if os.getenv('APIFY_META_ORIGIN') == 'STANDBY':
+        # Run Web UI server
+        from web_ui import start_web_server
+        asyncio.run(start_web_server())
+        return
+
     parser = ArgumentParser(description='Scrape grant calls from dotaceeu.cz')
     parser.add_argument('--config', default='config.yml', help='Config file path')
     parser.add_argument('--output-format', choices=['json', 'csv', 'both'], help='Override output format')

@@ -1,0 +1,303 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- Statistics Cards -->
+<div class="row mb-5 g-4">
+    <!-- Total Grants -->
+    <div class="col-md-3">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-secondary">Celkem grantů</h6>
+                        <h3 class="card-title mb-0">{{ stats.total_count }}</h3>
+                        <small class="text-success">{{ stats.active_count }} aktivních</small>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Funding -->
+    <div class="col-md-3">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-secondary">Celková částka</h6>
+                        <h3 class="card-title mb-0">{{ "{:,.0f}".format(stats.total_funding / 1000000) }} M</h3>
+                        <small class="text-secondary">Kč</small>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Average Funding -->
+    <div class="col-md-3">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-secondary">Průměrná částka</h6>
+                        <h3 class="card-title mb-0">{{ "{:,.0f}".format(stats.avg_funding / 1000) }} K</h3>
+                        <small class="text-secondary">Kč</small>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Breakdown -->
+    <div class="col-md-3">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-secondary">Status</h6>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="badge bg-success">OK: {{ stats.status_counts.ok }}</span>
+                    <span class="badge bg-warning">Částečné: {{ stats.status_counts.partial }}</span>
+                    <span class="badge bg-danger">Chyba: {{ stats.status_counts.error }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Source Distribution -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4">
+                    <i class="bi bi-building"></i>
+                    Rozdělení podle ministerstev
+                </h5>
+                <div class="d-flex gap-2 flex-wrap">
+                    {% for source_id, count in stats.source_counts.items() %}
+                        <span class="badge bg-secondary">{{ source_id }}: {{ count }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4">
+                    <i class="bi bi-funnel"></i>
+                    Filtry
+                </h5>
+                <div class="row g-3">
+                    <!-- Search Input -->
+                    <div class="col-md-4">
+                        <label for="searchInput" class="form-label">Vyhledávání</label>
+                        <input type="text" class="form-control" id="searchInput"
+                               placeholder="Hledat v názvu nebo popisu...">
+                    </div>
+
+                    <!-- Source Filter -->
+                    <div class="col-md-3">
+                        <label for="sourceFilter" class="form-label">Ministerstvo</label>
+                        <select class="form-select" id="sourceFilter">
+                            <option value="">Všechna ministerstva</option>
+                            {% for source in sources %}
+                                <option value="{{ source }}">{{ source }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="col-md-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">Všechny statusy</option>
+                            <option value="ok">OK</option>
+                            <option value="partial">Částečné</option>
+                            <option value="error">Chyba</option>
+                        </select>
+                    </div>
+
+                    <!-- Active Only Checkbox -->
+                    <div class="col-md-2">
+                        <label class="form-label d-block">&nbsp;</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="activeOnlyFilter">
+                            <label class="form-check-label" for="activeOnlyFilter">
+                                Pouze aktivní
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grants Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-table"></i>
+                        Granty
+                    </h5>
+                    <span class="badge bg-primary" id="visibleCount">{{ stats.total_count }}</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">Ministerstvo</th>
+                                <th>Název</th>
+                                <th style="width: 150px;">Částka (max)</th>
+                                <th style="width: 120px;">Deadline</th>
+                                <th style="width: 100px;">Status</th>
+                                <th style="width: 100px;">Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grantsTableBody">
+                            {% for grant in grants %}
+                            <tr class="grant-row"
+                                data-source-id="{{ grant.sourceId }}"
+                                data-title="{{ grant.title|lower }}"
+                                data-description="{{ grant.get('description', '')|lower }}"
+                                data-status="{{ grant.status }}"
+                                data-deadline="{{ grant.deadline }}"
+                                data-active="{% if grant.deadline and not is_date_in_past(grant.deadline) %}true{% else %}false{% endif %}">
+                                <td>
+                                    <span class="badge bg-secondary">{{ grant.sourceId }}</span>
+                                </td>
+                                <td>
+                                    <strong>{{ grant.title[:80] }}{% if grant.title|length > 80 %}...{% endif %}</strong>
+                                </td>
+                                <td>
+                                    {% if grant.fundingAmount.max > 0 %}
+                                        {{ "{:,.0f}".format(grant.fundingAmount.max) }} Kč
+                                    {% else %}
+                                        <span class="text-secondary">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if grant.deadline %}
+                                        {{ grant.deadline }}
+                                        {% if is_date_in_past(grant.deadline) %}
+                                            <span class="badge bg-secondary">Uzavřeno</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Aktivní</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-secondary">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if grant.status == 'ok' %}
+                                        <span class="badge bg-success">OK</span>
+                                    {% elif grant.status == 'partial' %}
+                                        <span class="badge bg-warning">Částečné</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Chyba</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#grantModal{{ loop.index }}">
+                                        <i class="bi bi-eye"></i> Detail
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- No Results Message -->
+                <div id="noResultsMessage" class="alert alert-warning text-center" style="display: none;">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Žádné granty neodpovídají zadaným kritériím
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grant Detail Modals -->
+{% for grant in grants %}
+<div class="modal fade" id="grantModal{{ loop.index }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ grant.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>Zdroj</h6>
+                    <p><span class="badge bg-secondary me-2">{{ grant.sourceId }}</span> {{ grant.sourceName }}</p>
+                </div>
+                {% if grant.get('description') %}
+                <div class="mb-3">
+                    <h6>Popis</h6>
+                    <p>{{ grant.description }}</p>
+                </div>
+                {% endif %}
+                <div class="mb-3">
+                    <h6>Financování</h6>
+                    <p>
+                        {% if grant.fundingAmount.min > 0 and grant.fundingAmount.max > 0 %}
+                            {{ "{:,.0f}".format(grant.fundingAmount.min) }} - {{ "{:,.0f}".format(grant.fundingAmount.max) }} {{ grant.fundingAmount.currency }}
+                        {% elif grant.fundingAmount.max > 0 %}
+                            Až {{ "{:,.0f}".format(grant.fundingAmount.max) }} {{ grant.fundingAmount.currency }}
+                        {% else %}
+                            Není specifikováno
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <h6>Deadline</h6>
+                    <p>{{ grant.deadline if grant.deadline else "Není specifikován" }}</p>
+                </div>
+                {% if grant.eligibility %}
+                <div class="mb-3">
+                    <h6>Oprávnění žadatelé</h6>
+                    <ul>
+                    {% for item in grant.eligibility %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <a href="{{ grant.grantUrl }}" target="_blank" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> Otevřít originál
+                </a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/app.js"></script>
+{% endblock %}

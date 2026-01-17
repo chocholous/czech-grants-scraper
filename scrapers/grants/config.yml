@@ -34,3 +34,17 @@ filters:
 logging:
   level: "${LOG_LEVEL:-INFO}"
   file: "./logs/scraper.log"
+
+# Ministerstva
+ministries:
+  mz:
+    source_id: "mz-grants"
+    source_name: "Ministerstvo zdravotnictví"
+    base_url: "${MZ_BASE_URL:-https://mzd.gov.cz}"
+    enabled: true
+
+  mze:
+    source_id: "mze-grants"
+    source_name: "Ministerstvo zemědělství"
+    base_url: "${MZE_BASE_URL:-https://szif.gov.cz}"
+    enabled: true
