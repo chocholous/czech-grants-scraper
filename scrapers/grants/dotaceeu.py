@@ -203,6 +203,33 @@ def generate_external_id(call_number: Optional[str], url: str) -> str:
     return f"slug_{slug}"
 
 
+def is_grant_page_url(url: str) -> bool:
+    """
+    Check if URL looks like a grant detail page vs general info page.
+
+    Used to filter URLs before deep scraping to avoid scraping
+    non-grant pages like /kontakty/, /o-nas/, /dokumenty/, etc.
+    """
+    url_lower = url.lower()
+
+    # Grant page URL patterns (whitelist)
+    grant_patterns = [
+        '/dotace/',           # SFZP, OPST, OPZP grant pages
+        '/dotace-a-pujcky/', # SFZP grants and loans
+        '/vyzva',            # Matches vyzva-, vyzvy-, Vyzvy- (ESFCR, IROP, etc.)
+        '/vyhlaseni-',       # AZVCR call announcements
+        '/program/',         # TACR programs
+        '/souteze/',         # TACR competitions
+        '/investicni-programy/', # NRB investment programs
+        '/fondyeu/clanek/',  # MV EU funds articles (grant calls)
+        '/aktualni-vyzvy/',  # GACR current calls
+        '/nabidka-dotaci/',  # OPST grant offerings
+    ]
+
+    # Check if URL matches any grant pattern
+    return any(pattern in url_lower for pattern in grant_patterns)
+
+
 # ============================================================================
 # SECTION 4: HTML Parser
 # ============================================================================
@@ -821,11 +848,15 @@ class DotaceuCrawler:
                     self.logger.info(f"Constructed OPZP URL: {target_url}")
 
         # Strategy 2: Check existing URLs for compatible scrapers
+        # Only consider URLs that look like grant pages (not /kontakty/, /o-nas/, etc.)
         if not scraper and grant.all_urls:
             for url in grant.all_urls:
+                if not is_grant_page_url(url):
+                    continue
                 scraper = self.scraper_registry.get_scraper_for_url(url)
                 if scraper:
                     target_url = url
+                    self.logger.debug(f"Found grant URL via Strategy 2: {url}")
                     break
 
         if not scraper:
