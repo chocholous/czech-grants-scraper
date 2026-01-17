@@ -201,7 +201,28 @@ class ZasadyPDFParser:
         7 Přílohy k žádosti o dotaci
         8 Termín příjmu dokladů
         9 Doklady prokazující nárok na dotaci
+
+        Special handling:
+        - Programs with "Specifikace jednotlivých dotačních podprogramů" structure
+        - Programs with "A) Žádost" / "B) Formulář" sections before numbered content
         """
+        # Check if this program has "Specifikace" structure (e.g., 20.A, 8.F)
+        start_line = 1  # Default: skip first line (program header)
+
+        for i, line in enumerate(program_lines):
+            # Look for "Specifikace jednotlivých dotačních podprogramů"
+            if re.search(r'Specifikace jednotlivých dotačních podprogramů', line, re.IGNORECASE):
+                start_line = i + 1
+                break
+            # Or look for first sub-program with standard structure
+            # e.g., "20.A.a. Podpora napájení dojnic" followed by "1 Účel"
+            if re.match(r'^[\d\.A-Za-z]+\.\s+[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]', line):
+                # Check if there's "1 Účel" within next 20 lines
+                for j in range(i + 1, min(i + 20, len(program_lines))):
+                    if re.match(r'^1\s+(Účel|Předmět)', program_lines[j]):
+                        start_line = i
+                        break
+
         section_pattern = re.compile(
             r'^(\d+)\s+(Účel|Předmět|Žadatel|Konečný příjemce|Dotace|Výše dotace|'
             r'Podmínky|Termín|Přílohy|Doklady)'
@@ -211,7 +232,7 @@ class ZasadyPDFParser:
         current_section = None
         current_text = []
 
-        for line in program_lines[1:]:  # Skip first line (program header)
+        for line in program_lines[start_line:]:
             # Check for new section
             match = section_pattern.match(line)
             if match:

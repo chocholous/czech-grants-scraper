@@ -1,0 +1,157 @@
+{
+  "title": "MZe SZIF Grants Dataset",
+  "description": "Dataset containing Czech Ministry of Agriculture national grants administered by SZIF",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "source_url": {
+      "type": "string",
+      "title": "Source URL",
+      "description": "URL of the grant detail page"
+    },
+    "scraper_name": {
+      "type": "string",
+      "title": "Scraper Name",
+      "description": "Name of the scraper that extracted this grant"
+    },
+    "scraped_at": {
+      "type": "string",
+      "title": "Scraped At",
+      "description": "Timestamp when the grant was scraped (ISO 8601)"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Full description of the grant program"
+    },
+    "summary": {
+      "type": "string",
+      "title": "Summary",
+      "description": "Short summary of the grant"
+    },
+    "funding_amounts": {
+      "type": "object",
+      "title": "Funding Amounts",
+      "description": "Minimum and maximum funding amounts",
+      "properties": {
+        "min": {
+          "type": "integer",
+          "title": "Minimum"
+        },
+        "max": {
+          "type": "integer",
+          "title": "Maximum"
+        },
+        "currency": {
+          "type": "string",
+          "title": "Currency"
+        },
+        "unit": {
+          "type": "string",
+          "title": "Unit"
+        }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "title": "Documents",
+      "description": "List of related documents",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "doc_type": {
+            "type": "string"
+          },
+          "file_format": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "eligible_recipients": {
+      "type": "array",
+      "title": "Eligible Recipients",
+      "description": "List of eligible recipient types",
+      "items": {
+        "type": "string"
+      }
+    },
+    "additional_metadata": {
+      "type": "object",
+      "title": "Additional Metadata",
+      "description": "Additional grant metadata",
+      "properties": {
+        "program_id": {
+          "type": "string",
+          "title": "Program ID"
+        },
+        "program_name": {
+          "type": "string",
+          "title": "Program Name"
+        },
+        "deadline": {
+          "type": "object",
+          "title": "Deadline",
+          "properties": {
+            "start_date": {
+              "type": "string"
+            },
+            "end_date": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "additional_metadata.program_id",
+          "additional_metadata.program_name",
+          "funding_amounts.max",
+          "funding_amounts.currency",
+          "additional_metadata.deadline.end_date",
+          "source_url"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "additional_metadata.program_id": {
+            "label": "Program ID",
+            "format": "text"
+          },
+          "additional_metadata.program_name": {
+            "label": "Program Name",
+            "format": "text"
+          },
+          "funding_amounts.max": {
+            "label": "Max Funding",
+            "format": "number"
+          },
+          "funding_amounts.currency": {
+            "label": "Currency",
+            "format": "text"
+          },
+          "additional_metadata.deadline.end_date": {
+            "label": "Deadline",
+            "format": "date"
+          },
+          "source_url": {
+            "label": "URL",
+            "format": "link"
+          }
+        }
+      }
+    }
+  }
+}

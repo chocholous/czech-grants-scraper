@@ -367,29 +367,53 @@ class MZeSZIFCzScraper(AbstractGrantSubScraper):
 
         Examples:
         - "1D" -> "1.D"
-        - "18" -> "18"
-        - "3A" -> "3.a" (series 3 uses lowercase!)
+        - "18" -> "18" (číselný program zůstává beze změny)
+        - "3A" -> "3.a" (série 3 používá malá písmena!)
+        - "8F" -> "8.F"
         - "20A" -> "20.A"
         - "9AA" -> "9.A.a"
         - "9AB13" -> "9.A.b.1"
         """
         import re
 
-        # Handle special cases like 9AB13 -> 9.A.b.1.-3.
+        # Special cases for complex sub-programs
+        # 9AB13 → 9.A.b (parent program contains all sub-programs 1-3)
         if program_id == "9AB13":
-            return "9.A.b.1"  # Try simplified version
-        if program_id == "9AB4":
-            return "9.A.b.4"
+            return "9.A.b"
+
+        # 9AB4 is inactive from 2026, won't be in PDF
+        # (handled as no match, returns None)
+
+        # Special mapping: HTML has pure numbers but PDF has letter suffix
+        if program_id == "17":
+            return "17.A"
+        if program_id == "18":
+            return "18.A"
+
+        # Series 20: HTML has parent program but PDF has only sub-programs
+        # Map to first sub-program with full structure
+        if program_id == "20A":
+            return "20.A.a"
+        if program_id == "20B":
+            return "20.B.a"
+        if program_id == "20C":
+            return "20.C"  # This one exists as-is
+        if program_id == "20D":
+            return "20.D.a"
+        if program_id == "20E":
+            return "20.E.a"
+        if program_id == "20G":
+            return "20.G.a"
+
+        # Program 8F: parent program, map to first sub-program
+        if program_id == "8F":
+            return "8.F.a"
 
         # General pattern: split on case changes and numbers
-        # "1D" -> ["1", "D"]
-        # "20A" -> ["20", "A"]
-        # "3A" -> ["3", "A"] -> "3.a" (special case for series 3)
-        # "9AA" -> ["9", "A", "A"] -> "9.A.a"
-
         parts = re.findall(r'\d+|[A-Z][a-z]*', program_id)
 
         if len(parts) <= 1:
+            # Pure number like "18", "17" stays unchanged
             return program_id
 
         # Special handling for series 3: first letter after number is lowercase
@@ -397,11 +421,12 @@ class MZeSZIFCzScraper(AbstractGrantSubScraper):
         if len(parts) == 2 and parts[0] == "3" and parts[1].isupper() and len(parts[1]) == 1:
             return f"3.{parts[1].lower()}"
 
-        # Add dots between parts
+        # General case: add dots between parts
+        # "1D" -> "1.D", "8F" -> "8.F", "20A" -> "20.A"
         result = ".".join(parts)
 
-        # Handle lowercase letters (sub-programs like 9.A.a)
-        # If there are multiple uppercase letters, second becomes lowercase
+        # Handle lowercase letters for sub-programs (e.g., 9.A.a)
+        # If there are 3+ parts and third is single uppercase letter, make it lowercase
         if len(parts) >= 3 and parts[2].isupper() and len(parts[2]) == 1:
             # 9AA -> 9.A.a
             result_parts = result.split('.')

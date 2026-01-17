@@ -1,0 +1,22 @@
+{
+  "actorSpecification": 1,
+  "name": "mze_szif_grants_scraper",
+  "title": "MZe SZIF National Grants Scraper",
+  "version": "1.0.0",
+  "description": "Autonomous scraper for Czech Ministry of Agriculture (MZe) national grants administered by SZIF. Extracts grant programs with funding amounts, deadlines, eligibility criteria, and documents from szif.gov.cz.",
+  "build": {
+    "tag": "latest",
+    "baseDockerImage": "apify/actor-python:3.13",
+    "dockerfile": "./Dockerfile"
+  },
+  "usesStandbyMode": true,
+  "input": "./.actor/input_schema.json",
+  "readme": "./README.md",
+  "categories": ["GOVERNMENT_DATA"],
+  "storages": {
+    "dataset": "./.actor/dataset_schema.json"
+  },
+  "meta": {
+    "generatedBy": "claude-sonnet-4-5-20250929"
+  }
+}
