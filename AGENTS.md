@@ -19,11 +19,12 @@ Before you start, read the PRD.md file to understand the project goals and requi
 - `data/` is the default output location for scraped results.
 
 ## Build, Test, and Development Commands
-- `pip install -e .` installs the project in editable mode.
-- `pip install -e .[dev]` installs dev tooling (pytest, black, ruff).
-- `playwright install chromium` installs the browser runtime for Playwright scrapers.
-- `python scrapers/grants/dotaceeu.py` runs the main grants scraper locally.
-- `pytest` runs the test suite; use `pytest tests/test_scrapers.py -k "source_name"` to focus on a single source.
+- `uv venv` creates a local virtual environment (default `.venv/`).
+- `uv pip install -e .` installs the project in editable mode.
+- `uv pip install -e .[dev]` installs dev tooling (pytest, black, ruff).
+- `uv run playwright install chromium` installs the browser runtime for Playwright scrapers.
+- `uv run python scrapers/grants/dotaceeu.py` runs the main grants scraper locally.
+- `uv run pytest` runs the test suite; use `uv run pytest tests/test_scrapers.py -k "source_name"` to focus on a single source.
 
 ## Coding Style & Naming Conventions
 - Python code follows Black with 100-char lines (`pyproject.toml`), and Ruff for linting.
@@ -43,6 +44,10 @@ Before you start, read the PRD.md file to understand the project goals and requi
 ## Security & Configuration Tips
 - Do not commit `.env` or any generated outputs from `data/`.
 - Scrapers should be polite to source sites; prefer configurable delays/timeouts over hardcoded values.
+
+## Python Environment Notes
+- Use `uv` for dependency management and execution to keep environments reproducible.
+- Prefer `uv run ...` when invoking Python tools so they run inside the project environment.
 
 # Apify Actors Development Guide
 
