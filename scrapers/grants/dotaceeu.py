@@ -131,12 +131,36 @@ class DotaceuGrant:
     # Metadata
     scraped_at: datetime
 
+    # Deep-scraped content (optional, populated by sub-scrapers)
+    deep_content: Optional['GrantContent'] = None
+
     def to_dict(self):
         """Convert to dictionary for JSON serialization"""
-        return {
-            k: v.isoformat() if isinstance(v, datetime) else v
-            for k, v in asdict(self).items()
-        }
+        result = {}
+        for k, v in asdict(self).items():
+            if k == 'deep_content':
+                continue  # Handle separately
+            if isinstance(v, datetime):
+                result[k] = v.isoformat()
+            else:
+                result[k] = v
+
+        # Include deep-scraped content if available
+        if self.deep_content:
+            result['deepContent'] = {
+                'description': self.deep_content.description,
+                'summary': self.deep_content.summary,
+                'fundingAmounts': self.deep_content.funding_amounts,
+                'documents': [d.to_dict() for d in self.deep_content.documents],
+                'applicationUrl': self.deep_content.application_url,
+                'contactEmail': self.deep_content.contact_email,
+                'eligibleRecipients': self.deep_content.eligible_recipients,
+            }
+            # Include LLM-enhanced info if available
+            if self.deep_content.enhanced_info:
+                result['enhancedInfo'] = self.deep_content.enhanced_info.to_dict()
+
+        return result
 
     def to_grantio_format(self) -> dict:
         """Convert to GrantSource-compatible JSON format"""
@@ -498,31 +522,41 @@ def extract_funding_amounts(text: str) -> tuple:
 class DotaceuCrawler:
     """Main crawler class for dotaceeu.cz"""
 
-    def __init__(self, config: Dict, deep_scrape: bool = False):
+    def __init__(
+        self,
+        config: Dict,
+        deep_scrape: bool = False,
+        enable_llm: bool = False,
+        llm_model: str = "anthropic/claude-haiku-4.5",
+    ):
         self.config = config
         self.logger = logging.getLogger(__name__)
         self.grants = []
         self.processed_count = 0
         self.error_count = 0
         self.deep_scrape = deep_scrape
+        self.enable_llm = enable_llm
+        self.llm_model = llm_model
 
         # Initialize sub-scraper registry
         self.scraper_registry = None
         if deep_scrape:
             self.scraper_registry = SubScraperRegistry()
-            # Register available sub-scrapers
-            self.scraper_registry.register(OPSTCzScraper())
-            self.scraper_registry.register(MVGovCzScraper())
-            self.scraper_registry.register(NRBCzScraper())
-            self.scraper_registry.register(IROPGovCzScraper())
-            self.scraper_registry.register(ESFCRCzScraper())
-            self.scraper_registry.register(OPZPCzScraper())
-            self.scraper_registry.register(OPTAKGovCzScraper())
-            self.scraper_registry.register(SFZPCzScraper())
-            self.scraper_registry.register(GACRCzScraper())
-            self.scraper_registry.register(TACRCzScraper())
-            self.scraper_registry.register(AZVCRCzScraper())
+            # Register available sub-scrapers with LLM settings
+            self.scraper_registry.register(OPSTCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MVGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(NRBCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(IROPGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(ESFCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(OPZPCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(OPTAKGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(SFZPCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(GACRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(TACRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(AZVCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.logger.info(f"Deep scraping enabled. Registered {self.scraper_registry.count()} sub-scrapers: {self.scraper_registry.list_scrapers()}")
+            if enable_llm:
+                self.logger.info(f"LLM enrichment enabled with model: {llm_model}")
 
     async def run(self, max_grants: Optional[int] = None):
         """Main scraping orchestration"""
@@ -929,7 +963,12 @@ class DotaceuCrawler:
             with open(content_file, 'w', encoding='utf-8') as f:
                 json.dump(content.to_dict(), f, ensure_ascii=False, indent=2)
 
+            # Store deep content on grant for dataset inclusion
+            grant.deep_content = content
+
             self.logger.info(f"Deep scrape complete for {grant.external_id}: {len(content.documents)} documents, {converted_count} converted to markdown")
+            if content.enhanced_info:
+                self.logger.info(f"LLM enrichment: {len(content.enhanced_info.eligibility_criteria)} criteria, {len(content.enhanced_info.thematic_keywords)} keywords")
 
         except Exception as e:
             self.logger.error(f"Error during deep scrape of {grant.external_id}: {e}", exc_info=True)

@@ -86,7 +86,9 @@ class AbstractGrantSubScraper(ABC):
                     f"{len(content.enhanced_info.thematic_keywords)} keywords"
                 )
         except Exception as e:
+            import traceback
             self.logger.warning(f"LLM enrichment failed (continuing without): {e}")
+            self.logger.debug(f"LLM enrichment traceback: {traceback.format_exc()}")
 
         return content
 

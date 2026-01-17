@@ -260,7 +260,12 @@ async def run_actor():
                 Actor.log.info(f"Starting dotaceeu.cz scraper (max_grants={max_grants}, deep_scrape={deep_scrape})")
 
                 # Run the crawler
-                crawler = DotaceuCrawler(config, deep_scrape=deep_scrape)
+                crawler = DotaceuCrawler(
+                    config,
+                    deep_scrape=deep_scrape,
+                    enable_llm=enable_llm,
+                    llm_model=llm_model,
+                )
                 await crawler.run(max_grants=max_grants)
 
                 Actor.log.info(f"Scraping complete. Processed: {crawler.processed_count}, Errors: {crawler.error_count}")
