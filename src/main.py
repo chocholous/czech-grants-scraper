@@ -1,12 +1,18 @@
 import asyncio
 import os
+import sys
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from threading import Thread
 from typing import Any, Dict, List, Optional
 
 from apify import Actor
 from dateutil import parser as date_parser
+
+# Add scrapers directory to path for imports
+SCRAPERS_DIR = Path(__file__).parent.parent / "scrapers" / "grants"
+sys.path.insert(0, str(SCRAPERS_DIR))
 
 
 class ReadinessHandler(BaseHTTPRequestHandler):
@@ -132,7 +138,7 @@ async def run_actor():
     readiness_server = start_readiness_server()
     input_data = await Actor.get_input() or {}
 
-    mode = input_data.get("mode", "search")
+    mode = input_data.get("mode", "refresh")
     Actor.log.info(f"Actor mode: {mode}")
 
     if mode not in {"search", "refresh", "auto"}:
@@ -141,8 +147,58 @@ async def run_actor():
 
     results: List[Dict[str, Any]] = []
 
+    # Run refresh first (if needed) so search can use fresh data
+    if mode in {"refresh", "auto"}:
+        Actor.log.info("Running scrapers to refresh data...")
+        try:
+            # Import scraper components (deferred to avoid import issues when not refreshing)
+            from dotaceeu import DotaceuCrawler, load_config
+
+            # Change to scrapers directory for relative paths in config
+            original_cwd = os.getcwd()
+            os.chdir(SCRAPERS_DIR)
+
+            try:
+                # Load scraper config
+                config = load_config("config.yml")
+
+                # Get scraper options from input
+                max_grants = input_data.get("maxGrants")  # Optional limit for testing
+                deep_scrape = input_data.get("deepScrape", False)
+
+                # Run the crawler
+                crawler = DotaceuCrawler(config, deep_scrape=deep_scrape)
+                await crawler.run(max_grants=max_grants)
+
+                Actor.log.info(f"Scraping complete. Processed: {crawler.processed_count}, Errors: {crawler.error_count}")
+
+                # Push scraped grants to the dataset
+                dataset = await Actor.open_dataset(name="czech-grants")
+                for grant in crawler.grants:
+                    grant_dict = grant.to_dict()
+                    # Add recordType for consistency with PRD schema
+                    grant_dict["recordType"] = "grant"
+                    grant_dict["sourceId"] = "dotaceeu"
+                    grant_dict["sourceName"] = "dotaceeu.cz"
+                    await dataset.push_data(grant_dict)
+
+                Actor.log.info(f"Pushed {len(crawler.grants)} grants to dataset")
+
+                # If only refreshing, return the scraped results
+                if mode == "refresh":
+                    results = [g.to_dict() for g in crawler.grants]
+
+            finally:
+                os.chdir(original_cwd)
+
+        except Exception as e:
+            Actor.log.error(f"Scraper error: {e}")
+            import traceback
+            Actor.log.error(traceback.format_exc())
+
+    # Search mode (or auto after refresh)
     if mode in {"search", "auto"}:
-        dataset = await Actor.open_dataset("czech-grants")
+        dataset = await Actor.open_dataset(name="czech-grants")
         limit = int(input_data.get("limit", 100))
         data = await dataset.get_data(limit=limit)
         items = data.items or []
@@ -158,12 +214,6 @@ async def run_actor():
             limit=limit,
         )
         Actor.log.info(f"Search results: {len(results)} items")
-
-    if mode in {"refresh", "auto"}:
-        Actor.log.warning(
-            "Refresh mode is not wired to scrapers yet. "
-            "Run `uv run python scrapers/grants/dotaceeu.py` for local scraping."
-        )
 
     await Actor.set_value("OUTPUT", {"count": len(results), "items": results})
 
