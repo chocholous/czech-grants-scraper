@@ -1,6 +1,6 @@
 {
   "actorSpecification": 1,
-  "name": "mz-grants-scraper",
+  "name": "mz_grants_scraper",
   "title": "MZ Grants Scraper",
   "version": "0.1.0",
   "description": "Scrapes grants from Czech Ministry of Health (MZ)",
