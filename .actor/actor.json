@@ -1,0 +1,10 @@
+{
+  "actorSpecification": 1,
+  "name": "czech-grants-scraper",
+  "title": "Czech Grants Scraper",
+  "version": "0.1.0",
+  "usesStandbyMode": true,
+  "meta": {
+    "generatedBy": "gpt-5-codex"
+  }
+}

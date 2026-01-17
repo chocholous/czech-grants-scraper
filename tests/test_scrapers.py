@@ -15,17 +15,27 @@ def test_imports():
 
 
 def test_grant_model():
-    """Test vytvoření Grant modelu."""
-    from scrapers.grants.sources.models import Grant
+    """Test vytvoření GrantContent modelu."""
+    from scrapers.grants.sources.models import GrantContent
 
-    grant = Grant(
-        title="Test Grant",
-        source="https://example.cz",
-        url="https://example.cz/grant/1",
+    content = GrantContent(
+        source_url="https://example.cz/grant/1",
+        scraper_name="TestScraper",
     )
 
-    assert grant.title == "Test Grant"
-    assert grant.source == "https://example.cz"
+    assert content.source_url == "https://example.cz/grant/1"
+    assert content.scraper_name == "TestScraper"
+
+
+def test_new_source_imports():
+    """Test že nové zdroje lze importovat."""
+    from scrapers.grants.sources.gacr_cz import GACRCzScraper
+    from scrapers.grants.sources.tacr_cz import TACRCzScraper
+    from scrapers.grants.sources.azvcr_cz import AZVCRCzScraper
+
+    assert GACRCzScraper().can_handle("https://gacr.cz")
+    assert TACRCzScraper().can_handle("https://tacr.cz")
+    assert AZVCRCzScraper().can_handle("https://azvcr.cz")
 
 
 # Přidejte další testy pro jednotlivé scrapery

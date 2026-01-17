@@ -37,6 +37,9 @@ from subscrapers.esfcr_cz import ESFCRCzScraper
 from subscrapers.opzp_cz import OPZPCzScraper
 from subscrapers.optak_gov_cz import OPTAKGovCzScraper
 from subscrapers.sfzp_cz import SFZPCzScraper
+from subscrapers.gacr_cz import GACRCzScraper
+from subscrapers.tacr_cz import TACRCzScraper
+from subscrapers.azvcr_cz import AZVCRCzScraper
 from subscrapers.utils import download_document, convert_document_to_markdown
 
 
@@ -489,6 +492,9 @@ class DotaceuCrawler:
             self.scraper_registry.register(OPZPCzScraper())
             self.scraper_registry.register(OPTAKGovCzScraper())
             self.scraper_registry.register(SFZPCzScraper())
+            self.scraper_registry.register(GACRCzScraper())
+            self.scraper_registry.register(TACRCzScraper())
+            self.scraper_registry.register(AZVCRCzScraper())
             self.logger.info(f"Deep scraping enabled. Registered {self.scraper_registry.count()} sub-scrapers: {self.scraper_registry.list_scrapers()}")
 
     async def run(self, max_grants: Optional[int] = None):
