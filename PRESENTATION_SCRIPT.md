@@ -2,9 +2,9 @@
 
 ## Opening Hook (30 seconds)
 
-**"Imagine you're a Czech startup looking for funding. There are over 300 grant programs across 15+ government portals, each with different formats, deadlines, and eligibility criteria. You'd spend weeks just finding what you qualify for—let alone applying.**
+**"Imagine you're a Czech NGO. 60%+ of your funding is typically from grants. There are over 300 grant programs across 150+ government portals (ministries, regions, cities, charities and foundations), each with different formats, deadlines, and eligibility criteria. You'd spend weeks just finding what you qualify for—let alone applying.**
 
-**We built a solution that scrapes, aggregates, and enriches all this data in minutes."**
+**We built a solution that scrapes, aggregates, and enriches all this data."**
 
 ---
 
