@@ -30,6 +30,67 @@ class Document:
 
 
 @dataclass
+class EligibilityCriterion:
+    """A single eligibility criterion with details."""
+
+    criterion: str  # The criterion text in Czech
+    category: str   # 'applicant', 'project', 'financial', 'territorial', 'temporal'
+    is_mandatory: bool = True
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+
+@dataclass
+class EvaluationCriterion:
+    """A single evaluation/scoring criterion."""
+
+    criterion: str
+    max_points: Optional[int] = None
+    weight: Optional[float] = None
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+
+@dataclass
+class EnhancedGrantInfo:
+    """
+    Enhanced grant information extracted via LLM.
+
+    Contains detailed criteria and requirements that are hard to extract
+    with traditional regex/CSS approaches.
+    """
+
+    # Eligibility criteria (categorized)
+    eligibility_criteria: List[EligibilityCriterion] = field(default_factory=list)
+
+    # Evaluation/scoring criteria
+    evaluation_criteria: List[EvaluationCriterion] = field(default_factory=list)
+
+    # Activities
+    supported_activities: List[str] = field(default_factory=list)
+    unsupported_activities: List[str] = field(default_factory=list)
+
+    # Project requirements
+    min_project_duration_months: Optional[int] = None
+    max_project_duration_months: Optional[int] = None
+    territorial_restrictions: Optional[str] = None
+    required_attachments: List[str] = field(default_factory=list)
+
+    # Financial details
+    aid_intensity_percent: Optional[float] = None
+    own_contribution_required: Optional[bool] = None
+
+    # Thematic categorization
+    thematic_keywords: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict:
+        data = asdict(self)
+        return data
+
+
+@dataclass
 class GrantContent:
     """Full grant content extracted from external source"""
 
@@ -58,30 +119,11 @@ class GrantContent:
     # Additional metadata
     additional_metadata: Dict = field(default_factory=dict)
 
-    # Deduplication
-    content_hash: Optional[str] = None
+    # LLM-enhanced data (optional)
+    enhanced_info: Optional[EnhancedGrantInfo] = None
 
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization"""
         data = asdict(self)
         data['scraped_at'] = self.scraped_at.isoformat()
         return data
-
-# Define a mock Grant class to satisfy imports in older scrapers that might rely on it before full content extraction
-@dataclass
-class Grant:
-    title: Optional[str] = None
-    source: Optional[str] = None
-    sourceName: Optional[str] = None
-    grantUrl: Optional[str] = None
-    deadline: Optional[str] = None
-    description: Optional[str] = None
-    eligibility: Optional[List[str]] = field(default_factory=list)
-    fundingAmount: Optional[Dict] = None
-    status: Optional[str] = None
-    statusNotes: Optional[str] = None
-    extractedAt: Optional[str] = None
-    contentHash: Optional[str] = None
-    
-    def to_dict(self) -> Dict:
-        return asdict(self)

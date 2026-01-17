@@ -5,32 +5,10 @@ The registry maintains a list of available scrapers and routes
 incoming URLs to the scraper that can handle them.
 """
 
-from typing import Optional, List, Callable
+from typing import Optional, List
 import logging
 from .base import AbstractGrantSubScraper
 
-# Global registry instance to be imported and used by scrapers
-REGISTRY = None
-
-def register_scraper(scraper_name: str):
-    """
-    Decorator to register a Scraper class instance to the global registry.
-    This assumes the registry is instantiated and available globally when imported.
-    """
-    def decorator(cls: type[AbstractGrantSubScraper]):
-        global REGISTRY
-        if REGISTRY is None:
-            # This should ideally not happen if this file is imported correctly
-            logging.error("REGISTRY is not initialized when trying to register a scraper.")
-            return cls
-
-        # Instantiate the class and register it
-        instance = cls()
-        # Overwrite the scraper name if provided via decorator for consistency
-        setattr(instance, 'TOOL_NAME', scraper_name) 
-        REGISTRY.register(instance)
-        return cls
-    return decorator
 
 class SubScraperRegistry:
     """Registry for managing and routing to sub-scrapers"""
@@ -82,6 +60,3 @@ class SubScraperRegistry:
     def count(self) -> int:
         """Return number of registered scrapers"""
         return len(self._scrapers)
-
-# Initialize the global registry instance upon module load
-REGISTRY = SubScraperRegistry()

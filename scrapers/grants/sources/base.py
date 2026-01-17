@@ -6,21 +6,91 @@ scraper implementation that inherits from this base class.
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional, List, Dict, Type, Any
+from typing import Optional
 import logging
-import asyncio
-import hashlib
+from .models import GrantContent
 
-from .models import GrantContent, Grant
-from .registry import REGISTRY
 
 class AbstractGrantSubScraper(ABC):
-    """Base class for site-specific grant content extraction"""
+    """
+    Base class for site-specific grant content extraction.
 
-    TOOL_NAME: str = "" # To be set by decorator/registry
+    Supports optional LLM enrichment to extract detailed criteria
+    and requirements from unstructured text.
+    """
 
-    def __init__(self):
+    def __init__(
+        self,
+        enable_llm: bool = False,
+        llm_model: str = "anthropic/claude-haiku-4.5",
+    ):
+        """
+        Initialize the scraper.
+
+        Args:
+            enable_llm: Whether to use LLM for enhanced extraction of
+                       eligibility criteria, evaluation criteria, etc.
+            llm_model: OpenRouter model identifier for LLM extraction.
+        """
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.enable_llm = enable_llm
+        self.llm_model = llm_model
+        self._llm_extractor = None
+
+    def _get_llm_extractor(self):
+        """Get or create LLM extractor (lazy initialization)."""
+        if self._llm_extractor is None:
+            from .llm_extractor import LLMExtractor
+            self._llm_extractor = LLMExtractor(model_name=self.llm_model)
+        return self._llm_extractor
+
+    async def enrich_with_llm(
+        self,
+        content: GrantContent,
+        page_text: str,
+        use_llm: Optional[bool] = None,
+    ) -> GrantContent:
+        """
+        Enrich GrantContent with LLM-extracted data.
+
+        Call this after traditional extraction to add eligibility criteria,
+        evaluation criteria, and other semantic information.
+
+        Args:
+            content: GrantContent from traditional scraping
+            page_text: Clean text content from the page (no HTML tags)
+            use_llm: Override instance-level enable_llm setting
+
+        Returns:
+            The same GrantContent, now with enhanced_info populated
+        """
+        should_use_llm = use_llm if use_llm is not None else self.enable_llm
+
+        if not should_use_llm:
+            return content
+
+        try:
+            from .llm_extractor import enrich_grant_content
+
+            self.logger.info(f"Running LLM enrichment for {content.source_url}...")
+            content = await enrich_grant_content(
+                grant_content=content,
+                html_content=page_text,
+                extractor=self._get_llm_extractor(),
+            )
+
+            if content.enhanced_info:
+                self.logger.info(
+                    f"LLM enrichment complete: "
+                    f"{len(content.enhanced_info.eligibility_criteria)} eligibility criteria, "
+                    f"{len(content.enhanced_info.thematic_keywords)} keywords"
+                )
+        except Exception as e:
+            import traceback
+            self.logger.warning(f"LLM enrichment failed (continuing without): {e}")
+            self.logger.debug(f"LLM enrichment traceback: {traceback.format_exc()}")
+
+        return content
 
     @abstractmethod
     def can_handle(self, url: str) -> bool:
@@ -34,33 +104,25 @@ class AbstractGrantSubScraper(ABC):
             True if this scraper handles this domain/pattern
         """
         pass
-    
-    @abstractmethod
-    async def list_grants(self) -> List[Dict[str, Any]]:
-        """
-        Fetches the list of grant calls from the source's main listing page(s).
 
-        Returns:
-            A list of dictionaries, where each dict minimally contains:
-            {'title': str, 'url': str, 'deadline': str (YYYY-MM-DD or None)}
-        """
-        pass
-    
     @abstractmethod
-    async def extract_content(self, url: str, grant_metadata: Dict[str, Any]) -> Optional[GrantContent]:
+    async def extract_content(
+        self, url: str, grant_metadata: dict, use_llm: Optional[bool] = None
+    ) -> Optional[GrantContent]:
         """
         Extract full grant content from source page.
 
         Args:
             url: Full URL to the grant detail page
             grant_metadata: Metadata from dotaceeu.cz (title, call_number, etc.)
+            use_llm: Override instance-level LLM setting for this call
 
         Returns:
             GrantContent object with description, documents, funding amounts, etc.
             Returns None if extraction fails
         """
         pass
-    
+
     @abstractmethod
     async def download_document(self, doc_url: str, save_path: str) -> bool:
         """
@@ -74,33 +136,7 @@ class AbstractGrantSubScraper(ABC):
             True if download succeeded, False otherwise
         """
         pass
-        
+
     def get_scraper_name(self) -> str:
         """Return human-readable scraper name (e.g., 'OPSTCzScraper')"""
-        # Fallback to class name if TOOL_NAME isn't set by decorator
-        return getattr(self, 'TOOL_NAME', self.__class__.__name__)
-
-    async def fetch_with_retries(self, tool: str, url: str, **kwargs) -> Any:
-        """Placeholder for fetching utility, assumed to exist in actual scraping context."""
-        self.logger.info(f"Fetching {url} using tool: {tool}")
-        # In a real environment, this would be replaced by an HTTP client call
-        # For now, we mock success, as we can't execute external HTTP calls in this context cleanly.
-        await asyncio.sleep(0.1) 
-        return "MOCK_HTML_CONTENT" 
-
-    def create_grant_from_metadata(self, metadata: Dict[str, Any]) -> Grant:
-        """Converts listing metadata (from list_grants) into a PRD-compliant Grant object."""
-        # This mapping needs to be highly specific to the source implementation
-        
-        # Default mapping based on PRD minimums
-        return Grant(
-            title=metadata.get('title', 'No Title Found'),
-            source=metadata.get('source', 'N/A'),
-            sourceName=metadata.get('sourceName', self.get_scraper_name()),
-            grantUrl=metadata.get('url'),
-            deadline=metadata.get('deadline'),
-            status="partial",
-            statusNotes=f"Listing metadata collected by {self.get_scraper_name()}",
-            contentHash=hashlib.sha256(str(metadata).encode()).hexdigest()
-        )
-
+        return self.__class__.__name__

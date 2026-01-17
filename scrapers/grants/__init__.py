@@ -2,12 +2,14 @@
 
 from .sources import (
     AbstractGrantSubScraper,
+    Document,
     GrantContent,
     SubScraperRegistry,
 )
 
 __all__ = [
     "AbstractGrantSubScraper",
+    "Document",
     "GrantContent",
     "SubScraperRegistry",
 ]

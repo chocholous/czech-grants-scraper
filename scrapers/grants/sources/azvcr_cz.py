@@ -1,7 +1,7 @@
 """
-Sub-scraper for tacr.cz (Technology Agency of the Czech Republic).
+Sub-scraper for azvcr.cz (Agency for Health Research of the Czech Republic).
 
-Extracts public calls and program documents from tacr.cz pages.
+Extracts calls, program descriptions, and related documents from azvcr.cz pages.
 """
 
 import re
@@ -18,11 +18,10 @@ from .models import GrantContent, Document
 from .utils import download_document
 
 
-class TACRCzScraper(AbstractGrantSubScraper):
-    """Scraper for tacr.cz grant and public call pages"""
+class AZVCRCzScraper(AbstractGrantSubScraper):
+    """Scraper for azvcr.cz grant call pages"""
 
-    # tacr.cz redirects to tacr.gov.cz - support both
-    DOMAINS = ["tacr.cz", "tacr.gov.cz"]
+    DOMAIN = "azvcr.cz"
 
     MAIN_SELECTORS = [
         "main",
@@ -43,7 +42,7 @@ class TACRCzScraper(AbstractGrantSubScraper):
     ]
 
     DOC_TYPE_PATTERNS = {
-        "call_text": ["vyzva", "zadani", "verejna soutez", "call text"],
+        "call_text": ["vyzva", "zadani", "call text"],
         "guidelines": ["pokyny", "metodika", "prirucka", "guidelines"],
         "template": ["sablona", "formular", "vzor", "template"],
         "budget": ["rozpocet", "budget", "kalkulace", "kalkulacka"],
@@ -52,14 +51,14 @@ class TACRCzScraper(AbstractGrantSubScraper):
     }
 
     def can_handle(self, url: str) -> bool:
-        """Check if URL is from tacr.cz or tacr.gov.cz domain"""
+        """Check if URL is from azvcr.cz domain"""
         parsed = urlparse(url)
-        return any(domain in parsed.netloc for domain in self.DOMAINS)
+        return self.DOMAIN in parsed.netloc
 
     async def extract_content(
         self, url: str, grant_metadata: dict, use_llm: Optional[bool] = None
     ) -> Optional[GrantContent]:
-        """Extract grant content from tacr.cz page"""
+        """Extract grant content from azvcr.cz page"""
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
@@ -71,7 +70,7 @@ class TACRCzScraper(AbstractGrantSubScraper):
             summary = self._extract_summary(container)
             documents = self._extract_documents(soup, url)
             funding_amounts = self._extract_funding_amounts(container.get_text(" ", strip=True))
-            application_url = self._extract_application_url(soup, url)
+            application_url = self._extract_application_url(soup)
             contact_email = self._extract_contact_email(soup)
             eligible_recipients = self._extract_eligible_recipients(soup)
 
@@ -108,7 +107,7 @@ class TACRCzScraper(AbstractGrantSubScraper):
             return None
 
     async def download_document(self, doc_url: str, save_path: str) -> bool:
-        """Download document from tacr.cz to local path"""
+        """Download document from azvcr.cz to local path"""
         return download_document(doc_url, save_path)
 
     def _get_main_container(self, soup: BeautifulSoup):
@@ -189,17 +188,15 @@ class TACRCzScraper(AbstractGrantSubScraper):
             "currency": "CZK",
         }
 
-    def _extract_application_url(self, soup: BeautifulSoup, base_url: str = None) -> Optional[str]:
-        keywords = ["aplikace", "podat", "podani", "formular", "submission", "zadost", "ista"]
+    def _extract_application_url(self, soup: BeautifulSoup) -> Optional[str]:
+        keywords = ["aplikace", "podat", "podani", "formular", "submission", "zadost"]
         for link in soup.find_all("a", href=True):
             text = link.get_text(" ", strip=True).lower()
             href = link["href"].lower()
             if any(keyword in text for keyword in keywords) or any(
                 keyword in href for keyword in keywords
             ):
-                # Use the base URL if provided, otherwise default to tacr.gov.cz
-                base = base_url or "https://tacr.gov.cz"
-                return urljoin(base, link["href"])
+                return urljoin(f"https://{self.DOMAIN}", link["href"])
         return None
 
     def _extract_contact_email(self, soup: BeautifulSoup) -> Optional[str]:

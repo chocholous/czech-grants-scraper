@@ -28,33 +28,19 @@ from playwright.async_api import async_playwright, Page, Browser
 from dateutil import parser as date_parser
 
 # Sub-scraper imports
-from sources.registry import SubScraperRegistry
-from sources.models import GrantContent, Document
-from sources.opst_cz import OPSTCzScraper
-from sources.mv_gov_cz import MVGovCzScraper
-from sources.nrb_cz import NRBCzScraper
-from sources.irop_mmr_cz import IROPGovCzScraper
-from sources.esfcr_cz import ESFCRCzScraper
-from sources.opzp_cz import OPZPCzScraper
-from sources.optak_gov_cz import OPTAKGovCzScraper
-from sources.sfzp_cz import SFZPCzScraper
-from sources.mze_cz import MZeCzScraper
-from sources.mdcr_cz import MDCrScraper
-from sources.nsa_gov_cz import NSAGovCzScraper
-from sources.mfcr_cz import MFCRCzScraper
-from sources.eeagrants_cz import EEAGrantsCzScraper
-from sources.mkcr_cz import MKCRCzScraper
-from sources.army_cz import ArmyCzScraper
-from sources.mpo_cz import MPOCzScraper
-from sources.mzcr_cz import MZCrCzScraper
-from sources.justice_cz import JusticeCzScraper
-from sources.mzv_cz import MZVCzScraper
-from sources.vlada_cz import VladaCzScraper
-from sources.msmt_cz import MSMTCzScraper
-from sources.opjak_cz import OPJAKCzScraper
-from sources.tacr_cz import TACRCzScraper
-from sources.gacr_cz import GACRCzScraper
-from sources.utils import download_document, convert_document_to_markdown
+from subscrapers import SubScraperRegistry, GrantContent, Document
+from subscrapers.opst_cz import OPSTCzScraper
+from subscrapers.mv_gov_cz import MVGovCzScraper
+from subscrapers.nrb_cz import NRBCzScraper
+from subscrapers.irop_mmr_cz import IROPGovCzScraper
+from subscrapers.esfcr_cz import ESFCRCzScraper
+from subscrapers.opzp_cz import OPZPCzScraper
+from subscrapers.optak_gov_cz import OPTAKGovCzScraper
+from subscrapers.sfzp_cz import SFZPCzScraper
+from subscrapers.gacr_cz import GACRCzScraper
+from subscrapers.tacr_cz import TACRCzScraper
+from subscrapers.azvcr_cz import AZVCRCzScraper
+from subscrapers.utils import download_document, convert_document_to_markdown
 
 
 def load_config(config_path: str = "config.yml") -> Dict:
@@ -145,12 +131,36 @@ class DotaceuGrant:
     # Metadata
     scraped_at: datetime
 
+    # Deep-scraped content (optional, populated by sub-scrapers)
+    deep_content: Optional['GrantContent'] = None
+
     def to_dict(self):
         """Convert to dictionary for JSON serialization"""
-        return {
-            k: v.isoformat() if isinstance(v, datetime) else v
-            for k, v in asdict(self).items()
-        }
+        result = {}
+        for k, v in asdict(self).items():
+            if k == 'deep_content':
+                continue  # Handle separately
+            if isinstance(v, datetime):
+                result[k] = v.isoformat()
+            else:
+                result[k] = v
+
+        # Include deep-scraped content if available
+        if self.deep_content:
+            result['deepContent'] = {
+                'description': self.deep_content.description,
+                'summary': self.deep_content.summary,
+                'fundingAmounts': self.deep_content.funding_amounts,
+                'documents': [d.to_dict() for d in self.deep_content.documents],
+                'applicationUrl': self.deep_content.application_url,
+                'contactEmail': self.deep_content.contact_email,
+                'eligibleRecipients': self.deep_content.eligible_recipients,
+            }
+            # Include LLM-enhanced info if available
+            if self.deep_content.enhanced_info:
+                result['enhancedInfo'] = self.deep_content.enhanced_info.to_dict()
+
+        return result
 
     def to_grantio_format(self) -> dict:
         """Convert to GrantSource-compatible JSON format"""
@@ -215,6 +225,33 @@ def generate_external_id(call_number: Optional[str], url: str) -> str:
     # Fallback: extract URL slug
     slug = url.rstrip('/').split('/')[-1]
     return f"slug_{slug}"
+
+
+def is_grant_page_url(url: str) -> bool:
+    """
+    Check if URL looks like a grant detail page vs general info page.
+
+    Used to filter URLs before deep scraping to avoid scraping
+    non-grant pages like /kontakty/, /o-nas/, /dokumenty/, etc.
+    """
+    url_lower = url.lower()
+
+    # Grant page URL patterns (whitelist)
+    grant_patterns = [
+        '/dotace/',           # SFZP, OPST, OPZP grant pages
+        '/dotace-a-pujcky/', # SFZP grants and loans
+        '/vyzva',            # Matches vyzva-, vyzvy-, Vyzvy- (ESFCR, IROP, etc.)
+        '/vyhlaseni-',       # AZVCR call announcements
+        '/program/',         # TACR programs
+        '/souteze/',         # TACR competitions
+        '/investicni-programy/', # NRB investment programs
+        '/fondyeu/clanek/',  # MV EU funds articles (grant calls)
+        '/aktualni-vyzvy/',  # GACR current calls
+        '/nabidka-dotaci/',  # OPST grant offerings
+    ]
+
+    # Check if URL matches any grant pattern
+    return any(pattern in url_lower for pattern in grant_patterns)
 
 
 # ============================================================================
@@ -485,44 +522,41 @@ def extract_funding_amounts(text: str) -> tuple:
 class DotaceuCrawler:
     """Main crawler class for dotaceeu.cz"""
 
-    def __init__(self, config: Dict, deep_scrape: bool = False):
+    def __init__(
+        self,
+        config: Dict,
+        deep_scrape: bool = False,
+        enable_llm: bool = False,
+        llm_model: str = "anthropic/claude-haiku-4.5",
+    ):
         self.config = config
         self.logger = logging.getLogger(__name__)
         self.grants = []
         self.processed_count = 0
         self.error_count = 0
         self.deep_scrape = deep_scrape
+        self.enable_llm = enable_llm
+        self.llm_model = llm_model
 
         # Initialize sub-scraper registry
         self.scraper_registry = None
         if deep_scrape:
             self.scraper_registry = SubScraperRegistry()
-            # Register available sub-scrapers
-            self.scraper_registry.register(OPSTCzScraper())
-            self.scraper_registry.register(MVGovCzScraper())
-            self.scraper_registry.register(NRBCzScraper())
-            self.scraper_registry.register(IROPGovCzScraper())
-            self.scraper_registry.register(ESFCRCzScraper())
-            self.scraper_registry.register(OPZPCzScraper())
-            self.scraper_registry.register(OPTAKGovCzScraper())
-            self.scraper_registry.register(SFZPCzScraper())
-            self.scraper_registry.register(MZeCzScraper())
-            self.scraper_registry.register(MDCrScraper())
-            self.scraper_registry.register(NSAGovCzScraper())
-            self.scraper_registry.register(MFCRCzScraper())
-            self.scraper_registry.register(EEAGrantsCzScraper())
-            self.scraper_registry.register(MKCRCzScraper())
-            self.scraper_registry.register(ArmyCzScraper())
-            self.scraper_registry.register(MPOCzScraper())
-            self.scraper_registry.register(MZCrCzScraper())
-            self.scraper_registry.register(JusticeCzScraper())
-            self.scraper_registry.register(MZVCzScraper())
-            self.scraper_registry.register(VladaCzScraper())
-            self.scraper_registry.register(MSMTCzScraper())
-            self.scraper_registry.register(OPJAKCzScraper())
-            self.scraper_registry.register(TACRCzScraper())
-            self.scraper_registry.register(GACRCzScraper())
+            # Register available sub-scrapers with LLM settings
+            self.scraper_registry.register(OPSTCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(MVGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(NRBCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(IROPGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(ESFCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(OPZPCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(OPTAKGovCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(SFZPCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(GACRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(TACRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
+            self.scraper_registry.register(AZVCRCzScraper(enable_llm=enable_llm, llm_model=llm_model))
             self.logger.info(f"Deep scraping enabled. Registered {self.scraper_registry.count()} sub-scrapers: {self.scraper_registry.list_scrapers()}")
+            if enable_llm:
+                self.logger.info(f"LLM enrichment enabled with model: {llm_model}")
 
     async def run(self, max_grants: Optional[int] = None):
         """Main scraping orchestration"""
@@ -848,11 +882,15 @@ class DotaceuCrawler:
                     self.logger.info(f"Constructed OPZP URL: {target_url}")
 
         # Strategy 2: Check existing URLs for compatible scrapers
+        # Only consider URLs that look like grant pages (not /kontakty/, /o-nas/, etc.)
         if not scraper and grant.all_urls:
             for url in grant.all_urls:
+                if not is_grant_page_url(url):
+                    continue
                 scraper = self.scraper_registry.get_scraper_for_url(url)
                 if scraper:
                     target_url = url
+                    self.logger.debug(f"Found grant URL via Strategy 2: {url}")
                     break
 
         if not scraper:
@@ -925,7 +963,12 @@ class DotaceuCrawler:
             with open(content_file, 'w', encoding='utf-8') as f:
                 json.dump(content.to_dict(), f, ensure_ascii=False, indent=2)
 
+            # Store deep content on grant for dataset inclusion
+            grant.deep_content = content
+
             self.logger.info(f"Deep scrape complete for {grant.external_id}: {len(content.documents)} documents, {converted_count} converted to markdown")
+            if content.enhanced_info:
+                self.logger.info(f"LLM enrichment: {len(content.enhanced_info.eligibility_criteria)} criteria, {len(content.enhanced_info.thematic_keywords)} keywords")
 
         except Exception as e:
             self.logger.error(f"Error during deep scrape of {grant.external_id}: {e}", exc_info=True)

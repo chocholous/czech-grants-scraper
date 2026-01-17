@@ -7,6 +7,7 @@ Extracts full grant content from opst.cz grant pages including:
 - Funding amounts
 - Application portals
 - Contact information
+- LLM-enhanced eligibility criteria and evaluation criteria (optional)
 """
 
 import re
@@ -44,7 +45,9 @@ class OPSTCzScraper(AbstractGrantSubScraper):
         parsed = urlparse(url)
         return self.DOMAIN in parsed.netloc
 
-    async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
+    async def extract_content(
+        self, url: str, grant_metadata: dict, use_llm: Optional[bool] = None
+    ) -> Optional[GrantContent]:
         """
         Extract full grant content from opst.cz page.
 
@@ -100,6 +103,13 @@ class OPSTCzScraper(AbstractGrantSubScraper):
 
             self.logger.info(f"Extracted content from {url}: {len(documents)} documents, "
                            f"{len(description or '')} chars description")
+
+            # LLM enrichment (optional) - extract page text and use base class method
+            for elem in soup.select("nav, footer, script, style, header"):
+                elem.decompose()
+            page_text = soup.get_text(" ", strip=True)
+            content = await self.enrich_with_llm(content, page_text, use_llm)
+
             return content
 
         except Exception as e:

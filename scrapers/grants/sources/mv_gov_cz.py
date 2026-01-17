@@ -34,15 +34,14 @@ class MVGovCzScraper(AbstractGrantSubScraper):
         'revision': ['rev0', 'rev1', 'rev2', 'rev'],
     }
 
-    def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
-
     def can_handle(self, url: str) -> bool:
         """Check if URL is from mv.gov.cz fondyeu section"""
         parsed = urlparse(url)
         return self.DOMAIN in parsed.netloc and self.PROGRAMME_IDENTIFIER in url
 
-    async def extract_content(self, url: str, grant_metadata: dict) -> Optional[GrantContent]:
+    async def extract_content(
+        self, url: str, grant_metadata: dict, use_llm: Optional[bool] = None
+    ) -> Optional[GrantContent]:
         """
         Extract content from mv.gov.cz grant page.
 
@@ -82,6 +81,13 @@ class MVGovCzScraper(AbstractGrantSubScraper):
             )
 
             self.logger.info(f"Extracted {len(documents)} documents from {url}")
+
+            # LLM enrichment (optional)
+            for elem in soup.select("nav, footer, script, style, header"):
+                elem.decompose()
+            page_text = soup.get_text(" ", strip=True)
+            content = await self.enrich_with_llm(content, page_text, use_llm)
+
             return content
 
         except Exception as e:
