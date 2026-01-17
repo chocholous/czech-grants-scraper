@@ -3,6 +3,7 @@
   "name": "czech-grants-scraper",
   "title": "Czech Grants Scraper",
   "version": "0.2",
+  "buildTag": "latest",
   "dockerfile": "./Dockerfile",
   "usesStandbyMode": true,
   "meta": {
