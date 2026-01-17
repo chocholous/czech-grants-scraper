@@ -147,8 +147,83 @@ async def run_actor():
 
     results: List[Dict[str, Any]] = []
 
+    # Test mode: run sub-scrapers directly on provided URLs
+    test_urls = input_data.get("testUrls", [])
+    if test_urls:
+        Actor.log.info(f"Test mode: processing {len(test_urls)} URLs with sub-scrapers")
+        try:
+            from subscrapers import SubScraperRegistry
+            from subscrapers.gacr_cz import GACRCzScraper
+            from subscrapers.tacr_cz import TACRCzScraper
+            from subscrapers.azvcr_cz import AZVCRCzScraper
+            from subscrapers.opst_cz import OPSTCzScraper
+            from subscrapers.opzp_cz import OPZPCzScraper
+            from subscrapers.nrb_cz import NRBCzScraper
+            from subscrapers.sfzp_cz import SFZPCzScraper
+            from subscrapers.esfcr_cz import ESFCRCzScraper
+            from subscrapers.mv_gov_cz import MVGovCzScraper
+            from subscrapers.irop_mmr_cz import IROPGovCzScraper
+            from subscrapers.optak_gov_cz import OPTAKGovCzScraper
+            import logging
+            logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+            # Register all sub-scrapers
+            registry = SubScraperRegistry()
+            registry.register(GACRCzScraper())
+            registry.register(TACRCzScraper())
+            registry.register(AZVCRCzScraper())
+            registry.register(OPSTCzScraper())
+            registry.register(OPZPCzScraper())
+            registry.register(NRBCzScraper())
+            registry.register(SFZPCzScraper())
+            registry.register(ESFCRCzScraper())
+            registry.register(MVGovCzScraper())
+            registry.register(IROPGovCzScraper())
+            registry.register(OPTAKGovCzScraper())
+
+            Actor.log.info(f"Registered {registry.count()} sub-scrapers: {registry.list_scrapers()}")
+
+            dataset = await Actor.open_dataset(name="czech-grants")
+
+            for url in test_urls:
+                Actor.log.info(f"Testing URL: {url}")
+                scraper = registry.get_scraper_for_url(url)
+                if not scraper:
+                    Actor.log.warning(f"No scraper found for URL: {url}")
+                    continue
+
+                Actor.log.info(f"Using scraper: {scraper.get_scraper_name()}")
+                try:
+                    content = await scraper.extract_content(url, {"title": "Test", "external_id": "test"})
+                    if content:
+                        Actor.log.info(f"Extracted content: {len(content.description or '')} chars description, {len(content.documents)} documents")
+                        # Push to dataset
+                        await dataset.push_data({
+                            "recordType": "grant",
+                            "sourceId": scraper.get_scraper_name(),
+                            "sourceUrl": url,
+                            "description": content.description,
+                            "summary": content.summary,
+                            "documents": [{"title": d.title, "url": d.url, "type": d.doc_type} for d in content.documents],
+                            "fundingAmounts": content.funding_amounts,
+                            "applicationUrl": content.application_url,
+                            "contactEmail": content.contact_email,
+                            "eligibleRecipients": content.eligible_recipients,
+                            "scrapedAt": content.scraped_at.isoformat() if content.scraped_at else None,
+                        })
+                        Actor.log.info(f"Pushed content to dataset")
+                    else:
+                        Actor.log.warning(f"No content extracted from {url}")
+                except Exception as e:
+                    Actor.log.error(f"Error extracting from {url}: {e}")
+
+        except Exception as e:
+            Actor.log.error(f"Test mode error: {e}")
+            import traceback
+            Actor.log.error(traceback.format_exc())
+
     # Run refresh first (if needed) so search can use fresh data
-    if mode in {"refresh", "auto"}:
+    elif mode in {"refresh", "auto"}:
         Actor.log.info("Running scrapers to refresh data...")
         try:
             # Import scraper components (deferred to avoid import issues when not refreshing)
@@ -201,8 +276,8 @@ async def run_actor():
             import traceback
             Actor.log.error(traceback.format_exc())
 
-    # Search mode (or auto after refresh)
-    if mode in {"search", "auto"}:
+    # Search mode (or auto after refresh) - skip if testUrls was used
+    if not test_urls and mode in {"search", "auto"}:
         dataset = await Actor.open_dataset(name="czech-grants")
         limit = int(input_data.get("limit", 100))
         data = await dataset.get_data(limit=limit)
