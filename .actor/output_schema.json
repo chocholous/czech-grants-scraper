@@ -1,0 +1,212 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "Czech Grants Output",
+    "description": "Grant data scraped from Czech funding portals with optional LLM-enriched eligibility criteria",
+    "type": "object",
+    "properties": {
+        "recordType": {
+            "type": "string",
+            "description": "Record type identifier",
+            "enum": ["grant"]
+        },
+        "sourceId": {
+            "type": "string",
+            "description": "Scraper identifier (e.g., 'dotaceeu', 'OPSTCzScraper')"
+        },
+        "sourceName": {
+            "type": "string",
+            "description": "Human-readable source name"
+        },
+        "sourceUrl": {
+            "type": "string",
+            "description": "URL of the grant detail page",
+            "format": "uri"
+        },
+        "title": {
+            "type": "string",
+            "description": "Grant title"
+        },
+        "description": {
+            "type": "string",
+            "description": "Full grant description"
+        },
+        "summary": {
+            "type": "string",
+            "description": "Short summary of the grant"
+        },
+        "callNumber": {
+            "type": "string",
+            "description": "Grant call number (e.g., '10_25_102')"
+        },
+        "operationalProgramme": {
+            "type": "string",
+            "description": "Operational programme name"
+        },
+        "callStatus": {
+            "type": "string",
+            "description": "Call status (Otevřená, Uzavřená, Plánovaná)"
+        },
+        "submissionDeadline": {
+            "type": "string",
+            "description": "Application submission deadline",
+            "format": "date-time"
+        },
+        "documents": {
+            "type": "array",
+            "description": "Attached documents (PDFs, guidelines, templates)",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "Document title"
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "Download URL",
+                        "format": "uri"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Document type",
+                        "enum": ["call_text", "guidelines", "template", "budget", "faq", "annex", "other"]
+                    }
+                }
+            }
+        },
+        "fundingAmounts": {
+            "type": "object",
+            "description": "Funding information",
+            "properties": {
+                "total": {
+                    "type": "integer",
+                    "description": "Total allocation in CZK"
+                },
+                "min": {
+                    "type": "integer",
+                    "description": "Minimum grant amount in CZK"
+                },
+                "max": {
+                    "type": "integer",
+                    "description": "Maximum grant amount in CZK"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Currency code",
+                    "default": "CZK"
+                }
+            }
+        },
+        "applicationUrl": {
+            "type": "string",
+            "description": "URL to application portal",
+            "format": "uri"
+        },
+        "contactEmail": {
+            "type": "string",
+            "description": "Contact email for inquiries",
+            "format": "email"
+        },
+        "eligibleRecipients": {
+            "type": "array",
+            "description": "List of eligible applicant types",
+            "items": {
+                "type": "string"
+            }
+        },
+        "scrapedAt": {
+            "type": "string",
+            "description": "Timestamp when the grant was scraped",
+            "format": "date-time"
+        },
+        "enhancedInfo": {
+            "type": "object",
+            "description": "LLM-extracted detailed criteria (only present when enableLlm=true)",
+            "properties": {
+                "eligibility_criteria": {
+                    "type": "array",
+                    "description": "Detailed eligibility criteria",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "criterion": {
+                                "type": "string",
+                                "description": "Criterion text in Czech"
+                            },
+                            "category": {
+                                "type": "string",
+                                "description": "Criterion category",
+                                "enum": ["applicant", "project", "financial", "territorial", "temporal"]
+                            },
+                            "is_mandatory": {
+                                "type": "boolean",
+                                "description": "Whether criterion is mandatory"
+                            }
+                        }
+                    }
+                },
+                "evaluation_criteria": {
+                    "type": "array",
+                    "description": "Scoring/evaluation criteria",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "criterion": {
+                                "type": "string",
+                                "description": "What is being evaluated"
+                            },
+                            "max_points": {
+                                "type": "integer",
+                                "description": "Maximum points for this criterion"
+                            },
+                            "weight": {
+                                "type": "number",
+                                "description": "Weight as decimal (e.g., 0.3 for 30%)"
+                            }
+                        }
+                    }
+                },
+                "supported_activities": {
+                    "type": "array",
+                    "description": "Activities that can be funded",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "unsupported_activities": {
+                    "type": "array",
+                    "description": "Activities explicitly not eligible",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "territorial_restrictions": {
+                    "type": "string",
+                    "description": "Geographic restrictions (e.g., 'Karlovarský kraj')"
+                },
+                "required_attachments": {
+                    "type": "array",
+                    "description": "Documents required with application",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "thematic_keywords": {
+                    "type": "array",
+                    "description": "Key themes for categorization",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "aid_intensity_percent": {
+                    "type": "number",
+                    "description": "Support intensity as percentage"
+                },
+                "own_contribution_required": {
+                    "type": "boolean",
+                    "description": "Whether applicant must provide own contribution"
+                }
+            }
+        }
+    }
+}
