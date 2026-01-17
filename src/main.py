@@ -172,24 +172,24 @@ async def run_actor():
 
                 Actor.log.info(f"Scraping complete. Processed: {crawler.processed_count}, Errors: {crawler.error_count}")
 
-                # Push scraped grants to the dataset
-                dataset = await Actor.open_dataset(name="czech-grants")
-                for grant in crawler.grants:
-                    grant_dict = grant.to_dict()
-                    # Add recordType for consistency with PRD schema
-                    grant_dict["recordType"] = "grant"
-                    grant_dict["sourceId"] = "dotaceeu"
-                    grant_dict["sourceName"] = "dotaceeu.cz"
-                    await dataset.push_data(grant_dict)
-
-                Actor.log.info(f"Pushed {len(crawler.grants)} grants to dataset")
-
-                # If only refreshing, return the scraped results
-                if mode == "refresh":
-                    results = [g.to_dict() for g in crawler.grants]
-
             finally:
                 os.chdir(original_cwd)
+
+            # Push scraped grants to the dataset (after restoring cwd for correct storage path)
+            dataset = await Actor.open_dataset(name="czech-grants")
+            for grant in crawler.grants:
+                grant_dict = grant.to_dict()
+                # Add recordType for consistency with PRD schema
+                grant_dict["recordType"] = "grant"
+                grant_dict["sourceId"] = "dotaceeu"
+                grant_dict["sourceName"] = "dotaceeu.cz"
+                await dataset.push_data(grant_dict)
+
+            Actor.log.info(f"Pushed {len(crawler.grants)} grants to dataset")
+
+            # If only refreshing, return the scraped results
+            if mode == "refresh":
+                results = [g.to_dict() for g in crawler.grants]
 
         except Exception as e:
             Actor.log.error(f"Scraper error: {e}")
