@@ -54,23 +54,68 @@
 
 ## Plánované zdroje
 
-### Charitativní organizace
+> **Poznámka:** Kompletní výzkum zdrojů je k dispozici v adresáři `/docs/research/`:
+> - `grant-sources-complete.md` - Kompletní přehled všech zdrojů
+> - `zdroje-kompletni-seznam.md` - Seznam 300+ URL
+> - `krajske-dotace-detail.md` - Detailní mapování krajů
+> - `nadace-detail.md` - Detailní přehled nadací
+> - `mezinarodni-zdroje-detail.md` - Mezinárodní zdroje
+
+### Priorita 1 - Agregátory a vysoký objem
+
+| Zdroj | URL | Popis |
+|-------|-----|-------|
+| Grantový diář | grantovydiar.cz | Kalendář výzev pro neziskovky |
+| DotaceOnline | dotaceonline.cz | Monitoring všech výzev |
+| Svět neziskovek | svetneziskovek.cz | Grantový diář s upozorněními |
+
+### Priorita 2 - Ministerstva
+
+| Zdroj | URL | Popis |
+|-------|-----|-------|
+| MŽP - Program NNO | mzp.gov.cz | 12 témat, 50-300 tis. Kč |
+| MMR - Dotace NNO | mmr.gov.cz | Přístupnost, bydlení, regiony |
+| MŠMT | msmt.gov.cz | Mládež, vzdělávání |
+
+### Priorita 3 - Nadace
+
+| Zdroj | URL | Popis | Objem |
+|-------|-----|-------|-------|
+| Nadace OSF | granty.nadaceosf.cz | Občanská společnost | 13+ mil. EUR |
+| Nadace ČEZ | nadacecez.cz | Sociální služby | 270 mil. Kč/rok |
+| Nadace Sirius | nadacesirius.cz | Ohrožené děti | 10+ mil. Kč |
+| NROS | nros.cz | Pomozte dětem, Správný start | - |
+| Nadace O2 | nadaceo2.cz | Digitální vzdělávání | 5 mil. Kč/rok |
+| Světluška | svetluska.rozhlas.cz | Zrakově postižení | - |
+| Nadace Partnerství | nadacepartnerstvi.cz | Ekologie, stromy | - |
+
+### Priorita 4 - Kraje
+
+| Zdroj | URL | Popis |
+|-------|-----|-------|
+| Praha | granty.praha.eu | Komplexní portál |
+| Středočeský | dotace.kr-stredocesky.cz | EDP systém |
+| Jihomoravský | dotace.kr-jihomoravsky.cz | Podpora NNO |
+| Zlínský | zlinskykraj.cz/dotace | 21 programů, 191 mil. Kč |
+| Moravskoslezský | msk.cz/temata/dotace | OPST region |
+
+### Priorita 5 - Mezinárodní
+
+| Zdroj | URL | Popis |
+|-------|-----|-------|
+| Visegrádský fond | visegradfund.org | V4 spolupráce |
+| ERSTE Foundation | erstestiftung.org | Střední Evropa |
+| Česko-německý fond | fondbudoucnosti.cz | Česko-německé projekty |
+| Program LIFE | program-life.cz | EU - životní prostředí |
+
+### Databáze a registry
 
 | Zdroj | URL | Popis |
 |-------|-----|-------|
 | Veřejný rejstřík | justice.cz | Právní formy: nadace, nadační fond, spolek |
 | ARES | ares.gov.cz | Administrativní registr ekonomických subjektů |
 | CEDR | cedr.mfcr.cz | Centrální registr dotací |
-| Neziskovky.cz | neziskovky.cz | Databáze neziskových organizací |
-
-### Nadace
-
-| Zdroj | URL | Popis |
-|-------|-----|-------|
-| Nadace OSF | osf.cz | Open Society Fund Praha |
-| Nadace Via | nadacevia.cz | Podpora komunitního rozvoje |
-| Nadace Partnerství | nadacepartnerstvi.cz | Ekologické projekty |
-| Kellner Family Foundation | kellnerfoundation.cz | Vzdělávání |
+| Fórum dárců | donorsforum.cz | TOP 100 nadací, Mapa dárcovství |
 
 ## Datový formát
 
