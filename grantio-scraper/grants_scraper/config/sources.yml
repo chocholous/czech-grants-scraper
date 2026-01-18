@@ -1,0 +1,77 @@
+# Grant Sources Configuration
+# ===========================
+#
+# Real URLs from existing scrapers for testing
+
+sources:
+  # MZD.GOV.CZ - Ministerstvo práce (National Grant Programs 2026)
+  - source_id: mzd_gov
+    source_name: "MZD Národní dotační programy 2026"
+    base_url: "https://mzd.gov.cz"
+    listing_url: "https://mzd.gov.cz/category/dotace-a-programove-financovani/narodni-dotacni-programy-2026/"
+    listing_selector: "a[href*='narodni-dotacni-programy-2026/'][href$='/']"
+    detail_url_pattern: "https://mzd\\.gov\\.cz/.+narodni-dotacni-programy-2026/[^/]+/$"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "social"
+      ministry: true
+
+  # OPZP.CZ - Operační program Životní prostředí
+  - source_id: opzp
+    source_name: "OP Životní prostředí"
+    base_url: "https://opzp.cz"
+    listing_url: "https://opzp.cz/dotace/"
+    listing_selector: "a[href*='/dotace/'][href*='-vyzva']"
+    detail_url_pattern: "https://opzp\\.cz/dotace/\\d+-vyzva.*"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "environment"
+
+  # SZIF - Národní dotace MZe
+  - source_id: mze_szif
+    source_name: "SZIF - Národní dotace"
+    base_url: "https://szif.gov.cz"
+    listing_url: "https://szif.gov.cz/cs/nd-dotacni-programy"
+    listing_selector: "a[href*='/cs/nd-dotacni-programy-']"
+    detail_url_pattern: "https://szif\\.gov\\.cz/cs/nd-dotacni-programy-.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "agriculture"
+      ministry: true
+
+  # ESFCR - Evropský sociální fond
+  - source_id: esfcr
+    source_name: "ESF ČR"
+    base_url: "https://www.esfcr.cz"
+    listing_url: "https://www.esfcr.cz/vyzvy-702"
+    listing_selector: "a[href*='/vyzva-']"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 1.5
+    metadata:
+      category: "eu_funds"
+
+  # OPTAK - Operační program TAK
+  - source_id: optak
+    source_name: "OP TAK"
+    base_url: "https://optak.gov.cz"
+    listing_url: "https://optak.gov.cz/vyzvy/"
+    listing_selector: "a[href*='/vyzvy/']"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "technology"
+
+# Default settings
+defaults:
+  requests_per_second: 2.0
+  max_pages: 50
+  navigator: single_level
+  parser: html_detail
