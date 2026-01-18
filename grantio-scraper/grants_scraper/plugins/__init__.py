@@ -7,4 +7,18 @@ Plugins provide additional capabilities that are not part of the core:
 - llm: LLM-based extraction (optional)
 """
 
-__all__ = []
+from .llm import (
+    LLMExtractor,
+    ExtractedGrantData,
+    ClaudeProvider,
+    OpenAIProvider,
+    extract_with_llm,
+)
+
+__all__ = [
+    "LLMExtractor",
+    "ExtractedGrantData",
+    "ClaudeProvider",
+    "OpenAIProvider",
+    "extract_with_llm",
+]

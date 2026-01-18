@@ -43,6 +43,7 @@ excel = [
     "pandas>=2.0",
 ]
 llm = [
+    "anthropic>=0.40.0",
     "openai>=1.0",
 ]
 dev = [
