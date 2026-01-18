@@ -15,6 +15,11 @@ from .normalizer import (
     parse_czech_amount,
     normalize_title,
     cleanup_html_text,
+    extract_deadline,
+    extract_all_dates,
+    extract_funding_range,
+    extract_funding_amounts,
+    detect_currency,
 )
 from .deduplicator import Deduplicator, generate_content_hash
 
@@ -27,6 +32,11 @@ __all__ = [
     "parse_czech_amount",
     "normalize_title",
     "cleanup_html_text",
+    "extract_deadline",
+    "extract_all_dates",
+    "extract_funding_range",
+    "extract_funding_amounts",
+    "detect_currency",
     "Deduplicator",
     "generate_content_hash",
 ]

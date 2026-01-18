@@ -193,3 +193,131 @@ class TestExtractPhone:
         """Test when no phone present."""
         result = extract_phone("Bez telefonu")
         assert result is None
+
+
+class TestExtractDeadline:
+    """Tests for extract_deadline function."""
+
+    def test_uzaverka_keyword(self):
+        """Test deadline with uzávěrka keyword."""
+        from grants_scraper.core.normalizer import extract_deadline
+        result = extract_deadline("Uzávěrka: 31. 12. 2024")
+        assert result == datetime(2024, 12, 31)
+
+    def test_termin_podani_keyword(self):
+        """Test deadline with termín podání keyword."""
+        from grants_scraper.core.normalizer import extract_deadline
+        result = extract_deadline("Termín podání žádostí je 15. 6. 2025.")
+        assert result == datetime(2025, 6, 15)
+
+    def test_platnost_do_keyword(self):
+        """Test deadline with platnost do keyword."""
+        from grants_scraper.core.normalizer import extract_deadline
+        result = extract_deadline("Platnost do: 1. 3. 2026 12:00")
+        assert result == datetime(2026, 3, 1, 12, 0)
+
+    def test_no_deadline(self):
+        """Test when no deadline present."""
+        from grants_scraper.core.normalizer import extract_deadline
+        result = extract_deadline("Bez termínu")
+        assert result is None
+
+    def test_fallback_do_pattern(self):
+        """Test fallback 'do' pattern."""
+        from grants_scraper.core.normalizer import extract_deadline
+        result = extract_deadline("Žádosti přijímáme do 28. 2. 2025")
+        assert result == datetime(2025, 2, 28)
+
+
+class TestExtractFundingRange:
+    """Tests for extract_funding_range function."""
+
+    def test_dash_range(self):
+        """Test range with dash."""
+        from grants_scraper.core.normalizer import extract_funding_range
+        result = extract_funding_range("Částka: 100 000 - 500 000 Kč")
+        assert result == (100_000, 500_000)
+
+    def test_od_do_range(self):
+        """Test range with 'od X do Y'."""
+        from grants_scraper.core.normalizer import extract_funding_range
+        result = extract_funding_range("od 1 mil. do 5 mil. Kč")
+        assert result == (1_000_000, 5_000_000)
+
+    def test_az_range(self):
+        """Test range with 'až'."""
+        from grants_scraper.core.normalizer import extract_funding_range
+        result = extract_funding_range("Dotace 50 000 až 200 000 Kč")
+        assert result == (50_000, 200_000)
+
+    def test_no_range(self):
+        """Test when no range present."""
+        from grants_scraper.core.normalizer import extract_funding_range
+        result = extract_funding_range("Žádné informace")
+        assert result == (None, None)
+
+
+class TestDetectCurrency:
+    """Tests for detect_currency function."""
+
+    def test_czk_explicit(self):
+        """Test CZK detection."""
+        from grants_scraper.core.normalizer import detect_currency
+        result = detect_currency("Výše dotace: 1 000 000 Kč")
+        assert result == "CZK"
+
+    def test_eur_explicit(self):
+        """Test EUR detection."""
+        from grants_scraper.core.normalizer import detect_currency
+        result = detect_currency("Budget: 500 000 EUR")
+        assert result == "EUR"
+
+    def test_eur_symbol(self):
+        """Test EUR symbol detection."""
+        from grants_scraper.core.normalizer import detect_currency
+        result = detect_currency("Celkem: 1 000 000 €")
+        assert result == "EUR"
+
+    def test_mixed_prefers_majority(self):
+        """Test mixed currencies prefers majority."""
+        from grants_scraper.core.normalizer import detect_currency
+        result = detect_currency("100 000 Kč nebo 200 000 Kč nebo 5000 EUR")
+        assert result == "CZK"
+
+
+class TestParseCzechDateWithTime:
+    """Tests for parse_czech_date with time component."""
+
+    def test_date_with_time(self):
+        """Test date with time."""
+        result = parse_czech_date("31. 12. 2024 12:00", include_time=True)
+        assert result == datetime(2024, 12, 31, 12, 0)
+
+    def test_date_with_time_dot_separator(self):
+        """Test date with time using dot separator."""
+        result = parse_czech_date("31. 12. 2024 23.59", include_time=True)
+        assert result == datetime(2024, 12, 31, 23, 59)
+
+    def test_iso_format(self):
+        """Test ISO date format."""
+        result = parse_czech_date("2024-12-31")
+        assert result == datetime(2024, 12, 31)
+
+
+class TestExtractAllDates:
+    """Tests for extract_all_dates function."""
+
+    def test_multiple_dates(self):
+        """Test extraction of multiple dates."""
+        from grants_scraper.core.normalizer import extract_all_dates
+        text = "Zahájení: 1. 1. 2025, Ukončení: 31. 12. 2025"
+        result = extract_all_dates(text)
+        assert len(result) == 2
+        assert datetime(2025, 1, 1) in result
+        assert datetime(2025, 12, 31) in result
+
+    def test_no_dates(self):
+        """Test no dates in text."""
+        from grants_scraper.core.normalizer import extract_all_dates
+        result = extract_all_dates("Žádná data")
+        assert result == []
