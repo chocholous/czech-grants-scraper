@@ -69,6 +69,155 @@ sources:
     metadata:
       category: "technology"
 
+  # OPST - Operační program Spravedlivá transformace
+  - source_id: opst
+    source_name: "OP Spravedlivá transformace"
+    base_url: "https://opst.cz"
+    listing_url: "https://opst.cz/dotace/"
+    listing_selector: "a[href*='/dotace/'][href*='-vyzva']"
+    detail_url_pattern: "https://opst\\.cz/dotace/\\d+-vyzva.*"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "just_transition"
+
+  # MV.GOV.CZ - Ministerstvo vnitra (OP NSHV)
+  - source_id: mv_gov
+    source_name: "MV ČR - Fondy EU"
+    base_url: "https://mv.gov.cz"
+    listing_url: "https://mv.gov.cz/fondyeu/clanek/vyzvy.aspx"
+    listing_selector: "a[href*='fondyeu'][href*='vyzva']"
+    detail_url_pattern: "https://mv\\.gov\\.cz/fondyeu/.+vyzva.*"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 1.5
+    metadata:
+      category: "security"
+      ministry: true
+
+  # SFZP - Státní fond životního prostředí
+  - source_id: sfzp
+    source_name: "SFŽP - Dotace"
+    base_url: "https://sfzp.cz"
+    listing_url: "https://www.sfzp.cz/dotace/aktualni-vyzvy/"
+    listing_selector: "a[href*='/dotace/'][href*='vyzva']"
+    detail_url_pattern: "https://.*sfzp\\.cz/dotace/.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "environment"
+
+  # IROP - Integrovaný regionální operační program
+  - source_id: irop
+    source_name: "IROP - Výzvy"
+    base_url: "https://irop.mmr.cz"
+    listing_url: "https://irop.mmr.cz/cs/vyzvy"
+    listing_selector: "a[href*='/cs/vyzvy/']"
+    detail_url_pattern: "https://irop\\.mmr\\.cz/cs/vyzvy/.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "regional_development"
+      ministry: true
+
+  # OP JAK - Operační program Jan Amos Komenský
+  - source_id: opjak
+    source_name: "OP JAK - Výzvy"
+    base_url: "https://opjak.cz"
+    listing_url: "https://opjak.cz/vyzvy/"
+    listing_selector: "a[href*='/vyzvy/'][href*='vyzva-']"
+    detail_url_pattern: "https://opjak\\.cz/vyzvy/vyzva-.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "education"
+
+  # MŠMT - Ministerstvo školství (dotace)
+  - source_id: msmt
+    source_name: "MŠMT - Dotace"
+    base_url: "https://www.msmt.cz"
+    listing_url: "https://www.msmt.cz/vzdelavani/vysoke-skolstvi/dotacni-programy"
+    listing_selector: "a[href*='dotac'][href*='program']"
+    detail_url_pattern: "https://.*msmt\\.cz/.+dotac.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 1.5
+    metadata:
+      category: "education"
+      ministry: true
+
+  # MZe - Ministerstvo zemědělství
+  - source_id: mze
+    source_name: "MZe - Dotace"
+    base_url: "https://eagri.cz"
+    listing_url: "https://eagri.cz/public/web/mze/dotace/"
+    listing_selector: "a[href*='/dotace/'][href*='narodni']"
+    detail_url_pattern: "https://eagri\\.cz/public/web/mze/dotace/.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "agriculture"
+      ministry: true
+
+  # MŽP - Ministerstvo životního prostředí
+  - source_id: mzp
+    source_name: "MŽP - Dotace"
+    base_url: "https://www.mzp.cz"
+    listing_url: "https://www.mzp.cz/cz/dotace"
+    listing_selector: "a[href*='/cz/'][href*='dotace']"
+    detail_url_pattern: "https://.*mzp\\.cz/cz/.+dotace.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 1.5
+    metadata:
+      category: "environment"
+      ministry: true
+
+  # MPO - Ministerstvo průmyslu a obchodu
+  - source_id: mpo
+    source_name: "MPO - Dotace"
+    base_url: "https://www.mpo.gov.cz"
+    listing_url: "https://www.mpo.gov.cz/cz/podnikani/dotace-a-podpora-podnikani/"
+    listing_selector: "a[href*='dotace'][href*='program']"
+    detail_url_pattern: "https://.*mpo\\.gov\\.cz/.+dotace.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 1.5
+    metadata:
+      category: "industry"
+      ministry: true
+
+  # TAČR - Technologická agentura ČR
+  - source_id: tacr
+    source_name: "TAČR - Výzvy"
+    base_url: "https://www.tacr.cz"
+    listing_url: "https://www.tacr.cz/vyzvy/"
+    listing_selector: "a[href*='/vyzvy/'][href*='vyzva']"
+    detail_url_pattern: "https://.*tacr\\.cz/vyzvy/.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "research"
+
+  # GAČR - Grantová agentura ČR
+  - source_id: gacr
+    source_name: "GAČR - Soutěže"
+    base_url: "https://gacr.cz"
+    listing_url: "https://gacr.cz/souteze/"
+    listing_selector: "a[href*='/souteze/'][href*='soutez']"
+    detail_url_pattern: "https://gacr\\.cz/souteze/.+"
+    navigator: single_level
+    parser: html_detail
+    requests_per_second: 2.0
+    metadata:
+      category: "research"
+
 # Default settings
 defaults:
   requests_per_second: 2.0
